@@ -38,7 +38,7 @@ namespace MeshLoader{
 
         // If the import failed, report it
         if (nullptr == aiScene) {
-            std::cout << "Erreur MeshLoader" << std::endl;
+            std::cout << "Mesh file not found or cannot be imported" << std::endl;
             return false;
         }
 

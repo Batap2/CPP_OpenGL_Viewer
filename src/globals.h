@@ -95,7 +95,7 @@ inline std::vector<Mesh*> scene_meshes;
 inline std::vector<Light*> scene_lights;
 inline std::vector<Object3D*> scene_objects;
 
-inline glm::vec3 skyColor(0.6,0.8,1);
+inline glm::vec3 skyColor(0.1,0.1,0.1);
 
 // -------------- IMGUI -------------- //
 

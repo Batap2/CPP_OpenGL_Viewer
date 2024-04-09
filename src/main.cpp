@@ -246,9 +246,9 @@ int main(int argc, char* argv[]){
 
 
     SceneOperations::initSceneLights();
-    SceneOperations::openFile("../data/bunny.fbx");
+    SceneOperations::openFile("../data/bunny.obj");
 
-    SceneOperations::openFile("../data/bunny.fbx");
+    SceneOperations::openFile("../data/doon.obj");
     scene_objects[0]->translate(glm::vec3(0,0,-1.2));
     scene_objects[0]->applyTransform();
 

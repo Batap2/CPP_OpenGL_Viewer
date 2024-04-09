@@ -174,6 +174,8 @@ void main (void){
 
     }
 
+    float c = fract(gl_PrimitiveID/10000.0f);
+
     fragColor = vec4(finalColor, 1.0f);
-    //fragColor = vec4(1,1,1,1);
+    //fragColor = vec4(vec3(c,c,c), 1);
 }

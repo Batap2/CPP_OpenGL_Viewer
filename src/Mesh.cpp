@@ -114,6 +114,15 @@ void Mesh::openglInit()
                  gpuOutputImg.data()
     );
     glGenerateMipmap(GL_TEXTURE_2D);
+
+
+    // ----------------- SELECTED EDGES FOR WIREFRAME ---------------- //
+
+    // Bind selected edges to layout location 6
+//    glBindBuffer(GL_ARRAY_BUFFER, NBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * selectedEdges.size(), selectedEdges.data(), GL_STATIC_DRAW);
+//    glEnableVertexAttribArray(6);
+//    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 }
 
 void Mesh::change_texture(FloatTexture tex)
@@ -158,7 +167,7 @@ void Mesh::send_material_to_shaders()
     }
     glBindBuffer(GL_ARRAY_BUFFER, diffuse_bo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), diffuse_vec.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(3); // This allows usage of layout location 1 in the vertex shader
+    glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 
@@ -172,7 +181,7 @@ void Mesh::send_material_to_shaders()
 
     glBindBuffer(GL_ARRAY_BUFFER, mra_bo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), mra_vec.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(4); // This allows usage of layout location 1 in the vertex shader
+    glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     // Send useTexture, isEmissive and isTransparent parameters
@@ -182,7 +191,7 @@ void Mesh::send_material_to_shaders()
     }
     glBindBuffer(GL_ARRAY_BUFFER, useTexture_bo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), useT_vec.data(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(5); // This allows usage of layout location 1 in the vertex shader
+    glEnableVertexAttribArray(5);
     glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
