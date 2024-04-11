@@ -12,6 +12,8 @@ in vec3 m_diffuse;
 in vec4 m_mra;
 in vec3 tex_emissive_transparent;
 
+in float noLighting;
+
 // Uniform variable modelview
 uniform mat4 modelview;
 uniform vec3 camPos;
@@ -105,6 +107,7 @@ void main (void){
 
     vec3 finalColor = vec3(0,0,0);
 
+    if(noLighting == 0)
     {
 
         vec3 viewDir = normalize(camPos - vec3(myvertex));
@@ -141,7 +144,7 @@ void main (void){
 
                 // Calcul de la radiance
                 float distanceFromL = length(lightDir);
-                float attenuation = 1/((distanceFromL*distanceFromL)*lightIntensity);
+                float attenuation = lightIntensity/((distanceFromL*distanceFromL));
                 vec3 radiance = lightColor * attenuation;
 
                 // Modele de reflectance de Cook-Torrance
@@ -172,10 +175,10 @@ void main (void){
             finalColor = pbrColor;
         }
 
+        fragColor = vec4(finalColor, 1.0f);
     }
-
-    float c = fract(gl_PrimitiveID/10000.0f);
-
-    fragColor = vec4(finalColor, 1.0f);
-    //fragColor = vec4(vec3(c,c,c), 1);
+    else
+    {
+        fragColor = vec4(m_diffuse, 1.0f);
+    }
 }

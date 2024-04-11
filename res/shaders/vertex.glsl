@@ -13,6 +13,7 @@ layout (location = 5) in vec3 in_tex_emissive_transparent;
 uniform mat4 modelview;
 uniform mat4 projection;
 uniform int render_mode;
+uniform float normalDisplayLength;
 
 out VS_OUT
 {

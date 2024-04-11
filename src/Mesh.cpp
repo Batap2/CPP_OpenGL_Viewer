@@ -67,9 +67,14 @@ void Mesh::openglInit()
 
     // ----------------- TEXTURES ---------------- //
 
-    diffuse_texture_LOC = glGetUniformLocation(shaderprogram, "diffuse_texture");
-    float_texture_LOC = glGetUniformLocation(shaderprogram, "float_texture");
+    diffuse_texture_LOC = glGetUniformLocation(mainShaderProgram, "diffuse_texture");
+    float_texture_LOC = glGetUniformLocation(mainShaderProgram, "float_texture");
 
+    glUseProgram(mainFlatShaderProgram);
+    glUniform1i(diffuse_texture_LOC, 0);
+    glUniform1i(float_texture_LOC,  1);
+
+    glUseProgram(mainShaderProgram);
     glUniform1i(diffuse_texture_LOC, 0);
     glUniform1i(float_texture_LOC,  1);
 

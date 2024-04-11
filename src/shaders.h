@@ -12,6 +12,8 @@ public:
     
     GLuint init_shaders (GLenum type, const char * filename);
     GLuint init_program (GLuint vertexshader, GLuint geometryShader, GLuint fragmentshader);
+
+
 };
 
 #endif

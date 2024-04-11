@@ -74,9 +74,12 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             case GLFW_KEY_TAB:
                 showMenus = !showMenus;
                 break;
+            case GLFW_KEY_N:
+                displayNormals = !displayNormals;
+                break;
             case GLFW_KEY_T:
                 render_mode = (render_mode + 1)%2;
-                glUniform1i(render_modeLoc, render_mode);
+                //glUniform1i(render_modeLoc, render_mode);
                 break;
             case GLFW_KEY_P:
                 flat_screen.change_texture(FloatTexture());
@@ -184,27 +187,45 @@ void display() {
     glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(render_mode == 0)
-    {
-        modelview = glm::lookAt(mainCamera.cameraPos,mainCamera.cameraPos + mainCamera.cameraDirection, mainCamera.cameraUp);
 
+    modelview = glm::lookAt(mainCamera.cameraPos,mainCamera.cameraPos + mainCamera.cameraDirection, mainCamera.cameraUp);
+
+    GLuint usedShader;
+
+    if(render_mode == 0){
+        usedShader = mainShaderProgram;
+    } else if(render_mode == 1){
+        usedShader = mainFlatShaderProgram;
+    }
+
+    glUseProgram(usedShader);
+    glUniform3fv(camPosLoc, 1, glm::value_ptr(mainCamera.cameraPos));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
+
+    if(displayNormals)
+    {
+        glUseProgram(displayNormalShaderProgram);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
-
         glUniform3fv(camPosLoc, 1, glm::value_ptr(mainCamera.cameraPos));
+    }
 
-        const GLfloat white[4] = {1, 1, 1, 1};
-        const GLfloat black[4] = {0, 0, 0, 0};
+    for(Mesh* meshP : scene_meshes)
+    {
 
-        glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
+        glBindVertexArray(meshP->VAO);
+        if(meshP->material.useTexture){
+            glActiveTexture(GL_TEXTURE0 + 0);
+            glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
+        }
 
-        for(Mesh* meshP : scene_meshes)
+        glUseProgram(usedShader);
+        glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+
+        if(displayNormals)
         {
-            glBindVertexArray(meshP->VAO);
-            if(meshP->material.useTexture){
-                glActiveTexture(GL_TEXTURE0 + 0);
-                glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
-            }
+            glUseProgram(displayNormalShaderProgram);
             glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
         }
     }

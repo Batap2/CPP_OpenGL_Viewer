@@ -65,14 +65,26 @@ namespace GUI{
         ImGui::TextColored({0.0f,1.0f,1.0f,1.0f}, "Render Mode");
         ImGui::SameLine();
         ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
-        if(ImGui::RadioButton("Fast", &render_mode, 0)){
+        if(ImGui::RadioButton("Smooth", &render_mode, 0)){
             glUniform1i(render_modeLoc, render_mode);
         }
         ImGui::SameLine();
 
-        if(ImGui::RadioButton("RayTraced", &render_mode, 1)){
+        if(ImGui::RadioButton("Flat", &render_mode, 1)){
             glUniform1i(render_modeLoc, render_mode);
         }
+
+        ImGui::Checkbox("displayNormals", &displayNormals);
+
+        if(ImGui::DragFloat("normals length", &normalDisplayLength, 0.1, 0, 9999)){
+
+            glUseProgram(mainFlatShaderProgram);
+            glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
+
+            glUseProgram(mainShaderProgram);
+            glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
+        }
+
         ImGui::Separator();ImGui::Separator();
         ImGui::Text(" ");ImGui::Text(" ");
 

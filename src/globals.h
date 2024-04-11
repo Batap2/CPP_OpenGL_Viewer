@@ -43,7 +43,7 @@ inline mat4 projection, modelview, model, view;
 inline std::mt19937 rng;
 
 // -------------- SHADER & UNIFORM LOCATIONS -------------- //
-inline GLuint vertexshader, geometryShader, fragmentshader, shaderprogram;
+inline GLuint vertexshader, geometryShader, geometryFlatShader, geometry_diplayNormalShader, fragmentshader, mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram;
 inline GLuint projectionLoc, modelviewLoc, modelLoc, viewLoc, render_modeLoc;
 
 inline GLuint lightcol;
@@ -56,6 +56,7 @@ inline GLuint specularcol;
 inline GLuint emissioncol;
 inline GLuint shininesscol;
 inline GLuint camPosLoc;
+inline GLuint normalDisplayLengthLoc;
 
 inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
 
@@ -83,6 +84,8 @@ inline float current_vp_height = window_height;
 inline std::vector<float> actual_render(window_height*window_width*3);
 
 inline int render_number = 0;
+inline bool displayNormals = false;
+inline float normalDisplayLength = 0.1f;
 
 // -------------- SCENE -------------- //
 

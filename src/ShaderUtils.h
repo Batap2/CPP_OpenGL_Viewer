@@ -67,14 +67,27 @@ namespace ShaderUtils{
         Shader shader;
         vertexshader = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex.glsl") ;
         geometryShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry.glsl");
+        geometryFlatShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometryFlat.glsl");
+        geometry_diplayNormalShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_normalDisplay.glsl");
         fragmentshader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment.glsl") ;
-        shaderprogram = shader.init_program(vertexshader, geometryShader, fragmentshader) ;
 
-        // Get uniform locations
-        projectionLoc = glGetUniformLocation(shaderprogram, "projection");
-        modelviewLoc = glGetUniformLocation(shaderprogram, "modelview");
-        camPosLoc = glGetUniformLocation(shaderprogram, "camPos");
-        render_modeLoc = glGetUniformLocation(shaderprogram, "render_mode");
+        mainShaderProgram = shader.init_program(vertexshader, geometryShader, fragmentshader) ;
+        mainFlatShaderProgram = shader.init_program(vertexshader, geometryFlatShader, fragmentshader) ;
+        displayNormalShaderProgram = shader.init_program(vertexshader, geometry_diplayNormalShader, fragmentshader);
+
+        GLuint shaders[2] = {mainShaderProgram, mainFlatShaderProgram};
+        for (auto& sha : shaders)
+        {
+            glUseProgram(sha);
+            // Get uniform locations
+            projectionLoc = glGetUniformLocation(sha, "projection");
+            modelviewLoc = glGetUniformLocation(sha, "modelview");
+            camPosLoc = glGetUniformLocation(sha, "camPos");
+            render_modeLoc = glGetUniformLocation(sha, "render_mode");
+
+            normalDisplayLengthLoc = glGetUniformLocation(sha, "normalDisplayLength");
+            glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
+        }
 
 
     }
@@ -94,6 +107,10 @@ namespace ShaderUtils{
 
         float aspect = (float) (width - vp) / (float) height;
         projection = glm::perspective(glm::radians(fovy), aspect, zNear, zFar);
+
+        glUseProgram(mainFlatShaderProgram);
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+        glUseProgram(mainShaderProgram);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
     }
 
@@ -123,8 +140,14 @@ namespace ShaderUtils{
             lightsBuffer[offset+6] = l->intensity;
         }
 
-        lightsBufferID = glGetUniformLocation(shaderprogram, "lights");
-        lights_numberID = glGetUniformLocation(shaderprogram, "lights_number");
+        lightsBufferID = glGetUniformLocation(mainShaderProgram, "lights");
+        lights_numberID = glGetUniformLocation(mainShaderProgram, "lights_number");
+
+        glUseProgram(mainFlatShaderProgram);
+        glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
+        glUniform1i(lights_numberID, scene_lights.size());
+
+        glUseProgram(mainShaderProgram);
         glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
         glUniform1i(lights_numberID, scene_lights.size());
     }
@@ -167,10 +190,15 @@ namespace ShaderUtils{
         }
 
 
-        materialBufferID = glGetUniformLocation(shaderprogram, "materials");
-        glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
+        materialBufferID = glGetUniformLocation(mainShaderProgram, "materials");
+        lights_numberID = glGetUniformLocation(mainShaderProgram, "materials_number");
 
-        lights_numberID = glGetUniformLocation(shaderprogram, "materials_number");
+        glUseProgram(mainFlatShaderProgram);
+        glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
+        glUniform1i(objectNumberID, scene_meshes.size());
+
+        glUseProgram(mainShaderProgram);
+        glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
         glUniform1i(objectNumberID, scene_meshes.size());
     }
 
