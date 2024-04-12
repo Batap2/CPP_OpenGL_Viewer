@@ -206,13 +206,14 @@ void display() {
     if(displayNormals)
     {
         glUseProgram(displayNormalShaderProgram);
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
-        glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
-        glUniform3fv(camPosLoc, 1, glm::value_ptr(mainCamera.cameraPos));
+        //glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
+        glUniformMatrix4fv(projectionLocNS, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLocNS, 1, GL_FALSE, &modelview[0][0]);
     }
 
     for(Mesh* meshP : scene_meshes)
     {
+        glUseProgram(usedShader);
 
         glBindVertexArray(meshP->VAO);
         if(meshP->material.useTexture){
@@ -220,7 +221,6 @@ void display() {
             glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
         }
 
-        glUseProgram(usedShader);
         glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
 
         if(displayNormals)

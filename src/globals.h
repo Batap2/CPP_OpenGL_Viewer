@@ -43,8 +43,11 @@ inline mat4 projection, modelview, model, view;
 inline std::mt19937 rng;
 
 // -------------- SHADER & UNIFORM LOCATIONS -------------- //
-inline GLuint vertexshader, geometryShader, geometryFlatShader, geometry_diplayNormalShader, fragmentshader, mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram;
+inline GLuint vertexshader, geometryShader, geometryFlatShader, geometry_diplayNormalShader, fragmentshader, fragmentFlatShader,  fragmentDisplayNormalShader, mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram;
 inline GLuint projectionLoc, modelviewLoc, modelLoc, viewLoc, render_modeLoc;
+
+// uniform for normal display shader
+inline GLuint projectionLocNS, modelviewLocNS;
 
 inline GLuint lightcol;
 inline GLuint lightpos;

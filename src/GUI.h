@@ -66,22 +66,19 @@ namespace GUI{
         ImGui::SameLine();
         ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
         if(ImGui::RadioButton("Smooth", &render_mode, 0)){
-            glUniform1i(render_modeLoc, render_mode);
+            //glUniform1i(render_modeLoc, render_mode);
         }
         ImGui::SameLine();
 
         if(ImGui::RadioButton("Flat", &render_mode, 1)){
-            glUniform1i(render_modeLoc, render_mode);
+            //glUniform1i(render_modeLoc, render_mode);
         }
 
         ImGui::Checkbox("displayNormals", &displayNormals);
 
-        if(ImGui::DragFloat("normals length", &normalDisplayLength, 0.1, 0, 9999)){
+        if(ImGui::DragFloat("normals length", &normalDisplayLength, 0.001, 0, 9999)){
 
-            glUseProgram(mainFlatShaderProgram);
-            glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
-
-            glUseProgram(mainShaderProgram);
+            glUseProgram(displayNormalShaderProgram);
             glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
         }
 

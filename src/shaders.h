@@ -11,7 +11,7 @@ public:
     void shader_errors (const GLint shader);
     
     GLuint init_shaders (GLenum type, const char * filename);
-    GLuint init_program (GLuint vertexshader, GLuint geometryShader, GLuint fragmentshader);
+    GLuint init_program (GLuint vertexShader_, GLuint geometryShader_, GLuint fragmentShader_);
 
 
 };

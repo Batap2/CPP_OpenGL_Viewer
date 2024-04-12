@@ -8,12 +8,10 @@ layout (location = 3) in vec3 in_m_diffuse;
 layout (location = 4) in vec4 in_m_mra;
 layout (location = 5) in vec3 in_tex_emissive_transparent;
 
-
 // Uniform variables
 uniform mat4 modelview;
 uniform mat4 projection;
 uniform int render_mode;
-uniform float normalDisplayLength;
 
 out VS_OUT
 {
@@ -29,12 +27,7 @@ out VS_OUT
 
 void main(){
 
-	if(render_mode == 1){
-		gl_Position = vec4(position, 1.0f);
-	} else
-	{
-		gl_Position = projection * modelview * vec4(position, 1.0f);
-	}
+	gl_Position = projection * modelview * vec4(position, 1.0f);
 
 	vs_out.v_mynormal = normal;
 	vs_out.v_myvertex = vec4(position, 1.0f);

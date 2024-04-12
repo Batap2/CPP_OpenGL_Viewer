@@ -5,7 +5,6 @@
 #ifndef OBJECT_VIEWER_SHADERUTILS_H
 #define OBJECT_VIEWER_SHADERUTILS_H
 
-
 #include <GL/glew.h>
 #include "GLFW/glfw3.h"
 #include "globals.h"
@@ -19,6 +18,19 @@ namespace ShaderUtils{
         glm::vec3 color;
         float intensity;
     };
+
+    template <typename F>
+    void forAllShader(const F& func)
+    {
+        GLuint shaders[3] = {mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram};
+        for (auto& sha : shaders)
+        {
+            glUseProgram(sha);
+
+            func(sha);
+        }
+        glUseProgram(mainShaderProgram);
+    }
 
     //TODO  cpt
     void drawLights()
@@ -62,33 +74,31 @@ namespace ShaderUtils{
 
     }
 
-    void init_shaders(){
-        // Initialize shaders
+    void init_shaders()
+    {
         Shader shader;
         vertexshader = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex.glsl") ;
         geometryShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry.glsl");
         geometryFlatShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometryFlat.glsl");
         geometry_diplayNormalShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_normalDisplay.glsl");
-        fragmentshader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment.glsl") ;
+        fragmentshader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment.glsl");
+        fragmentFlatShader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragmentFlat.glsl");
+        fragmentDisplayNormalShader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragmentDisplayNormal.glsl") ;
 
         mainShaderProgram = shader.init_program(vertexshader, geometryShader, fragmentshader) ;
-        mainFlatShaderProgram = shader.init_program(vertexshader, geometryFlatShader, fragmentshader) ;
-        displayNormalShaderProgram = shader.init_program(vertexshader, geometry_diplayNormalShader, fragmentshader);
+        mainFlatShaderProgram = shader.init_program(vertexshader, geometryFlatShader, fragmentFlatShader);
+        displayNormalShaderProgram = shader.init_program(vertexshader, geometry_diplayNormalShader, fragmentDisplayNormalShader);
 
-        GLuint shaders[2] = {mainShaderProgram, mainFlatShaderProgram};
-        for (auto& sha : shaders)
-        {
-            glUseProgram(sha);
-            // Get uniform locations
-            projectionLoc = glGetUniformLocation(sha, "projection");
-            modelviewLoc = glGetUniformLocation(sha, "modelview");
-            camPosLoc = glGetUniformLocation(sha, "camPos");
-            render_modeLoc = glGetUniformLocation(sha, "render_mode");
+        projectionLoc = glGetUniformLocation(mainShaderProgram, "projection");
+        modelviewLoc = glGetUniformLocation(mainShaderProgram, "modelview");
+        camPosLoc = glGetUniformLocation(mainShaderProgram, "camPos");
 
-            normalDisplayLengthLoc = glGetUniformLocation(sha, "normalDisplayLength");
-            glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
-        }
+        projectionLocNS = glGetUniformLocation(displayNormalShaderProgram, "projection");
+        modelviewLocNS = glGetUniformLocation(displayNormalShaderProgram, "modelview");
 
+
+        normalDisplayLengthLoc = glGetUniformLocation(displayNormalShaderProgram, "normalDisplayLength");
+        glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
 
     }
 
@@ -108,10 +118,10 @@ namespace ShaderUtils{
         float aspect = (float) (width - vp) / (float) height;
         projection = glm::perspective(glm::radians(fovy), aspect, zNear, zFar);
 
-        glUseProgram(mainFlatShaderProgram);
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
-        glUseProgram(mainShaderProgram);
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+        forAllShader(
+                [](GLuint sha){
+                    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+                });
     }
 
     void sendLightsToShaders()

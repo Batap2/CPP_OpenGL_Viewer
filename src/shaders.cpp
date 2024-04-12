@@ -67,17 +67,23 @@ GLuint Shader::init_shaders (GLenum type, const char *filename){
     return shader; 
 }
 
-GLuint Shader::init_program (GLuint vertexshader, GLuint geometryShader, GLuint fragmentshader){
+GLuint Shader::init_program (GLuint vertexShader_, GLuint geometryShader_, GLuint fragmentShader_){
     GLuint program = glCreateProgram(); 
     GLint linked; 
 
-    glAttachShader(program, vertexshader);
-    glAttachShader(program, geometryShader);
-    glAttachShader(program, fragmentshader); 
+    glAttachShader(program, vertexShader_);
+    glAttachShader(program, geometryShader_);
+    glAttachShader(program, fragmentShader_);
+
     glLinkProgram(program); 
     glGetProgramiv(program, GL_LINK_STATUS, &linked); 
 
-    if (linked) glUseProgram(program); 
+    if (linked){
+        glDetachShader(program, vertexShader_);
+        glDetachShader(program, geometryShader_);
+        glDetachShader(program, fragmentShader_);
+        glUseProgram(program);
+    }
     else{ 
         program_errors(program); 
         throw 4; 
