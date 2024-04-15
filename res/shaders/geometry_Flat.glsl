@@ -31,11 +31,18 @@ out vec3 tex_emissive_transparent;
 out vec3 barycenter;
 
 void main() {
+
+    vec3 a = vec3(vs_out[0].v_myvertex);
+    vec3 b = vec3(vs_out[1].v_myvertex);
+    vec3 c = vec3(vs_out[2].v_myvertex);
+
+    vec3 N = normalize(cross(b - a, c - a));
+
     for(int i = 0; i < gl_in.length(); i++){
         gl_Position = gl_in[i].gl_Position;
 
         myvertex = vs_out[i].v_myvertex;
-        mynormal = vs_out[i].v_mynormal;
+        mynormal = N;
         myuv = vs_out[i].v_myuv;
         m_ambiant = vs_out[i].v_m_ambiant;
         m_diffuse = vs_out[i].v_m_diffuse;
@@ -46,8 +53,6 @@ void main() {
         gl_PrimitiveID = gl_PrimitiveIDIn;
 
         EmitVertex();
-
-
     }
 
     EndPrimitive();

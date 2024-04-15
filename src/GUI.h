@@ -74,13 +74,15 @@ namespace GUI{
             //glUniform1i(render_modeLoc, render_mode);
         }
 
-        ImGui::Checkbox("displayNormals", &displayNormals);
+        ImGui::Checkbox("Display normals", &displayNormals);
 
         if(ImGui::DragFloat("normals length", &normalDisplayLength, 0.001, 0, 9999)){
 
-            glUseProgram(displayNormalShaderProgram);
+            glUseProgram(shaderProgram_NormalDisplay);
             glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
         }
+
+        ImGui::SliderInt("Wireframe Mode", &wireframeMode, 0, 1);
 
         ImGui::Separator();ImGui::Separator();
         ImGui::Text(" ");ImGui::Text(" ");

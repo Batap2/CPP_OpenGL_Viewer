@@ -47,24 +47,8 @@ public:
         return glm::vec3 (0.0f);
     }
 
-    void rotate(Axe axe, float angle)
+    void rotate(glm::vec3 axis, float angle)
     {
-        glm::vec3 axis;
-        switch (axe) {
-            case Axe::X:
-                axis = glm::vec3(1.0f, 0.0f, 0.0f);
-                break;
-            case Axe::Y:
-                axis = glm::vec3(0.0f, 1.0f, 0.0f);
-                break;
-            case Axe::Z:
-                axis = glm::vec3(0.0f, 0.0f, 1.0f);
-                break;
-            default:
-                axis = glm::vec3(1.0f, 0.0f, 0.0f); // Default to X-axis rotation
-                break;
-        }
-
         glm::quat rotationQuat = glm::angleAxis(glm::radians(angle), axis);
         transform = glm::mat4_cast(rotationQuat) * transform;
     }

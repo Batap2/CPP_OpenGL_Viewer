@@ -22,14 +22,14 @@ namespace ShaderUtils{
     template <typename F>
     void forAllShader(const F& func)
     {
-        GLuint shaders[3] = {mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram};
+        GLuint shaders[3] = {shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay};
         for (auto& sha : shaders)
         {
             glUseProgram(sha);
 
             func(sha);
         }
-        glUseProgram(mainShaderProgram);
+        glUseProgram(shaderProgram_main);
     }
 
     //TODO  cpt
@@ -77,29 +77,45 @@ namespace ShaderUtils{
     void init_shaders()
     {
         Shader shader;
-        vertexshader = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex.glsl") ;
-        geometryShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry.glsl");
-        geometryFlatShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometryFlat.glsl");
-        geometry_diplayNormalShader = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_normalDisplay.glsl");
-        fragmentshader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment.glsl");
-        fragmentFlatShader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragmentFlat.glsl");
-        fragmentDisplayNormalShader = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragmentDisplayNormal.glsl") ;
+        vertexShader_main = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex.glsl");
 
-        mainShaderProgram = shader.init_program(vertexshader, geometryShader, fragmentshader) ;
-        mainFlatShaderProgram = shader.init_program(vertexshader, geometryFlatShader, fragmentFlatShader);
-        displayNormalShaderProgram = shader.init_program(vertexshader, geometry_diplayNormalShader, fragmentDisplayNormalShader);
+        geometryShader_main = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_main.glsl");
+        geometryShader_Flat = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_Flat.glsl");
+        geometryShader_NormalDisplay = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_NormalDisplay.glsl");
+        geometryShader_WireframeDisplay = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_WireframeDisplay.glsl");
 
-        projectionLoc = glGetUniformLocation(mainShaderProgram, "projection");
-        modelviewLoc = glGetUniformLocation(mainShaderProgram, "modelview");
-        camPosLoc = glGetUniformLocation(mainShaderProgram, "camPos");
-
-        projectionLocNS = glGetUniformLocation(displayNormalShaderProgram, "projection");
-        modelviewLocNS = glGetUniformLocation(displayNormalShaderProgram, "modelview");
+        fragmentShader_main = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_main.glsl");
+        fragmentShader_NormalDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_NormalDisplay.glsl");
+        fragmentShader_WireframeDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_WireframeDisplay.glsl") ;
 
 
-        normalDisplayLengthLoc = glGetUniformLocation(displayNormalShaderProgram, "normalDisplayLength");
+        shaderProgram_main = shader.init_program(vertexShader_main, geometryShader_main, fragmentShader_main) ;
+        shaderProgram_Flat = shader.init_program(vertexShader_main, geometryShader_Flat, fragmentShader_main);
+        shaderProgram_NormalDisplay = shader.init_program(vertexShader_main, geometryShader_NormalDisplay, fragmentShader_NormalDisplay);
+        shaderProgram_WireframeDisplay = shader.init_program(vertexShader_main, geometryShader_WireframeDisplay, fragmentShader_WireframeDisplay);
+
+        projectionLoc = glGetUniformLocation(shaderProgram_main, "projection");
+        modelviewLoc = glGetUniformLocation(shaderProgram_main, "modelview");
+        camPosLoc = glGetUniformLocation(shaderProgram_main, "camPos");
+
+        projectionLocFS = glGetUniformLocation(shaderProgram_Flat, "projection");
+        modelviewLocFS = glGetUniformLocation(shaderProgram_Flat, "modelview");
+        camPosLocFS = glGetUniformLocation(shaderProgram_main, "camPos");
+
+        projectionLocNS = glGetUniformLocation(shaderProgram_NormalDisplay, "projection");
+        modelviewLocNS = glGetUniformLocation(shaderProgram_NormalDisplay, "modelview");
+
+        projectionLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "projection");
+        modelviewLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "modelview");
+        screenSizeLoc = glGetUniformLocation(shaderProgram_WireframeDisplay, "screenSize");
+        glUseProgram(shaderProgram_WireframeDisplay);
+        glUniform2f(screenSizeLoc, (float)window_width, (float)window_height);
+
+        glUseProgram(shaderProgram_NormalDisplay);
+        normalDisplayLengthLoc = glGetUniformLocation(shaderProgram_NormalDisplay, "normalDisplayLength");
         glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
 
+        glUseProgram(shaderProgram_main);
     }
 
     void reshape(GLFWwindow* window, int width, int height){
@@ -150,14 +166,14 @@ namespace ShaderUtils{
             lightsBuffer[offset+6] = l->intensity;
         }
 
-        lightsBufferID = glGetUniformLocation(mainShaderProgram, "lights");
-        lights_numberID = glGetUniformLocation(mainShaderProgram, "lights_number");
+        lightsBufferID = glGetUniformLocation(shaderProgram_main, "lights");
+        lights_numberID = glGetUniformLocation(shaderProgram_main, "lights_number");
 
-        glUseProgram(mainFlatShaderProgram);
+        glUseProgram(shaderProgram_Flat);
         glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
         glUniform1i(lights_numberID, scene_lights.size());
 
-        glUseProgram(mainShaderProgram);
+        glUseProgram(shaderProgram_main);
         glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
         glUniform1i(lights_numberID, scene_lights.size());
     }
@@ -200,14 +216,14 @@ namespace ShaderUtils{
         }
 
 
-        materialBufferID = glGetUniformLocation(mainShaderProgram, "materials");
-        lights_numberID = glGetUniformLocation(mainShaderProgram, "materials_number");
+        materialBufferID = glGetUniformLocation(shaderProgram_main, "materials");
+        lights_numberID = glGetUniformLocation(shaderProgram_main, "materials_number");
 
-        glUseProgram(mainFlatShaderProgram);
+        glUseProgram(shaderProgram_Flat);
         glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
         glUniform1i(objectNumberID, scene_meshes.size());
 
-        glUseProgram(mainShaderProgram);
+        glUseProgram(shaderProgram_main);
         glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
         glUniform1i(objectNumberID, scene_meshes.size());
     }

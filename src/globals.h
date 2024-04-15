@@ -43,22 +43,23 @@ inline mat4 projection, modelview, model, view;
 inline std::mt19937 rng;
 
 // -------------- SHADER & UNIFORM LOCATIONS -------------- //
-inline GLuint vertexshader, geometryShader, geometryFlatShader, geometry_diplayNormalShader, fragmentshader, fragmentFlatShader,  fragmentDisplayNormalShader, mainShaderProgram, mainFlatShaderProgram, displayNormalShaderProgram;
-inline GLuint projectionLoc, modelviewLoc, modelLoc, viewLoc, render_modeLoc;
+inline GLuint vertexShader_main;
+inline GLuint geometryShader_main, geometryShader_Flat, geometryShader_NormalDisplay, geometryShader_WireframeDisplay;
+inline GLuint fragmentShader_main,  fragmentShader_NormalDisplay, fragmentShader_WireframeDisplay;
+inline GLuint shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay, shaderProgram_WireframeDisplay;
+
+// uniform for main shader
+inline GLuint projectionLoc, modelviewLoc, camPosLoc;
+
+// uniform for normal display shader
+inline GLuint projectionLocFS, modelviewLocFS, camPosLocFS;
 
 // uniform for normal display shader
 inline GLuint projectionLocNS, modelviewLocNS;
 
-inline GLuint lightcol;
-inline GLuint lightpos;
-inline GLuint numusedcol;
-inline GLuint enablelighting;
-inline GLuint ambientcol;
-inline GLuint diffusecol;
-inline GLuint specularcol;
-inline GLuint emissioncol;
-inline GLuint shininesscol;
-inline GLuint camPosLoc;
+// uniform for wireframe display shader
+inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc;
+
 inline GLuint normalDisplayLengthLoc;
 
 inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
@@ -89,6 +90,7 @@ inline std::vector<float> actual_render(window_height*window_width*3);
 inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
+inline int wireframeMode = 1;
 
 // -------------- SCENE -------------- //
 

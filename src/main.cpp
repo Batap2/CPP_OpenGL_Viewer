@@ -193,22 +193,33 @@ void display() {
     GLuint usedShader;
 
     if(render_mode == 0){
-        usedShader = mainShaderProgram;
+        usedShader = shaderProgram_main;
+        glUseProgram(shaderProgram_main);
+        glUniform3fv(camPosLoc, 1, glm::value_ptr(mainCamera.cameraPos));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
     } else if(render_mode == 1){
-        usedShader = mainFlatShaderProgram;
+        usedShader = shaderProgram_Flat;
+        glUseProgram(shaderProgram_Flat);
+        glUniform3fv(camPosLocFS, 1, glm::value_ptr(mainCamera.cameraPos));
+        glUniformMatrix4fv(projectionLocFS, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLocFS, 1, GL_FALSE, &modelview[0][0]);
     }
 
-    glUseProgram(usedShader);
-    glUniform3fv(camPosLoc, 1, glm::value_ptr(mainCamera.cameraPos));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
-    glUniformMatrix4fv(modelviewLoc, 1, GL_FALSE, &modelview[0][0]);
+
 
     if(displayNormals)
     {
-        glUseProgram(displayNormalShaderProgram);
-        //glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
+        glUseProgram(shaderProgram_NormalDisplay);
         glUniformMatrix4fv(projectionLocNS, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLocNS, 1, GL_FALSE, &modelview[0][0]);
+    }
+
+    if(wireframeMode)
+    {
+        glUseProgram(shaderProgram_WireframeDisplay);
+        glUniformMatrix4fv(projectionLocWS, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLocWS, 1, GL_FALSE, &modelview[0][0]);
     }
 
     for(Mesh* meshP : scene_meshes)
@@ -225,7 +236,13 @@ void display() {
 
         if(displayNormals)
         {
-            glUseProgram(displayNormalShaderProgram);
+            glUseProgram(shaderProgram_NormalDisplay);
+            glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+        }
+
+        if(wireframeMode)
+        {
+            glUseProgram(shaderProgram_WireframeDisplay);
             glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
         }
     }
@@ -256,6 +273,12 @@ int main(int argc, char* argv[]){
     ShaderUtils::init_shaders();
 
     glEnable(GL_DEPTH_TEST);
+
+//    glEnable(GL_CULL_FACE);
+//    glCullFace(GL_FRONT_AND_BACK);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glfwSetWindowSizeCallback(window, ShaderUtils::reshape);
 
     glfwSetKeyCallback(window, keyboard);
@@ -272,6 +295,8 @@ int main(int argc, char* argv[]){
     SceneOperations::openFile("../data/doon.obj");
     scene_objects[0]->translate(glm::vec3(0,0,-1.2));
     scene_objects[0]->applyTransform();
+
+    //scene_objects[2]->rotate(vec3(0,1,0), 0.1);
 
     SceneOperations::init_flat_screen();
 
@@ -290,6 +315,9 @@ int main(int argc, char* argv[]){
         if(showMenus){
             GUI::draw(window);
         }
+
+
+        //scene_objects[2]->applyTransform();
 
         //glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
