@@ -233,7 +233,7 @@ void display() {
         }
 
         if(meshP->visible)
-            //glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
 
         if(displayNormals)
         {
@@ -296,7 +296,7 @@ int main(int argc, char* argv[]){
 //    scene_objects[0]->applyTransform();
 //
 //    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
-    SceneOperations::openFile("../data/2tri.obj");
+    SceneOperations::openFile("../data/tri.obj");
 
     SceneOperations::init_flat_screen();
 

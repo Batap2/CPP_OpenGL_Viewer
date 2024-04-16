@@ -1,7 +1,7 @@
 #version 330 core
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 15) out;
+layout (triangle_strip, max_vertices = 12) out;
 
 in VS_OUT
 {
@@ -31,72 +31,33 @@ void main() {
     vec2 v1 = p2 - p0;
     vec2 v2 = p1 - p0;
 
-//    vec2 p0p1 = p1 - p0;
-//    vec2 p1p2 = p2 - p1;
-//    vec2 p2p0 = p0 - p2;
+    vec2 p0p1 = normalize(p1 - p0);
+    vec2 p1p2 = normalize(p2 - p1);
+    vec2 p2p0 = normalize(p0 - p2);
+
+    vec2 n_p0p1 = vec2(-p0p1.y, p0p1.x);
+    vec2 n_p1p2 = vec2(-p1p2.y, p1p2.x);
+    vec2 n_p2p0 = vec2(-p2p0.y,-p2p0.x);
 
     float area = abs(v1.x*v2.y - v1.y * v2.x);
 
 
     // --------- 1
 
-    vec2 p0p1 = normalize(p1 - p0);
-    vec2 n_p0p1 = vec2(p0p1.y, -p0p1.x);
 
-    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0);
+    gl_Position = gl_in[0].gl_Position + vec4(n_p0p1/20,0,0);
     EmitVertex();
 
-    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
+    gl_Position = gl_in[0].gl_Position - vec4(n_p0p1/20,0,0);;
     EmitVertex();
 
-    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0);
+    gl_Position = gl_in[1].gl_Position + vec4(n_p0p1/20,0,0);
     EmitVertex();
 
-    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
+    gl_Position = gl_in[1].gl_Position - vec4(n_p0p1/20,0,0);;
     EmitVertex();
 
     // --------- 2
-
-    vec2 p1p2 = normalize(p2 - p1);
-    vec2 n_p1p2 = vec2(p1p2.y, -p1p2.x);
-
-    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0);
-    EmitVertex();
-
-    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0);
-    EmitVertex();
-
-    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    // --------- 3
-
-    vec2 p2p0 = normalize(p0 - p2);
-    vec2 n_p2p0 = vec2(p2p0.y, -p2p0.x);
-
-    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0);
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0);
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
-    EmitVertex();
-
-    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
-    EmitVertex();
 
     EndPrimitive();
 }
