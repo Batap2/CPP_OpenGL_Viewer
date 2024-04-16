@@ -1,7 +1,7 @@
 #version 330 core
 
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 6) out;
+layout (triangle_strip, max_vertices = 15) out;
 
 in VS_OUT
 {
@@ -18,50 +18,85 @@ in VS_OUT
 uniform mat4 modelview;
 uniform mat4 projection;
 uniform vec2 screenSize;
+uniform float wireframeWidth;
 
 noperspective out vec3 distFromEdge;
 
 void main() {
 
-        vec2 p0 = screenSize * gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
-        vec2 p1 = screenSize * gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
-        vec2 p2 = screenSize * gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
-        vec2 v0 = p2 - p1;
-        vec2 v1 = p2 - p0;
-        vec2 v2 = p1 - p0;
+    vec2 p0 = screenSize * gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
+    vec2 p1 = screenSize * gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
+    vec2 p2 = screenSize * gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
+    vec2 v0 = p2 - p1;
+    vec2 v1 = p2 - p0;
+    vec2 v2 = p1 - p0;
 
-        vec2 triCenter = (p0+p1+p2)/3;
+//    vec2 p0p1 = p1 - p0;
+//    vec2 p1p2 = p2 - p1;
+//    vec2 p2p0 = p0 - p2;
 
-        float area = abs(v1.x*v2.y - v1.y * v2.x);
+    float area = abs(v1.x*v2.y - v1.y * v2.x);
 
-        vec2 centerToPos;
 
-        centerToPos = gl_in[0].gl_Position.xy - triCenter;
+    // --------- 1
 
-        gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0);
-        distFromEdge = vec3(area/length(v0),0,0);
+    vec2 p0p1 = normalize(p1 - p0);
+    vec2 n_p0p1 = vec2(p0p1.y, -p0p1.x);
 
-        gl_PrimitiveID = gl_PrimitiveIDIn;
+    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
 
-        EmitVertex();
+    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
+    EmitVertex();
 
-        centerToPos = gl_in[1].gl_Position.xy - triCenter;
+    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
 
-        gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0);
-        distFromEdge = vec3(0,area/length(v1),0);
+    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
+    EmitVertex();
 
-        gl_PrimitiveID = gl_PrimitiveIDIn;
+    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p0p1/500*wireframeWidth, 0,0);
+    EmitVertex();
 
-        EmitVertex();
+    // --------- 2
 
-        centerToPos = gl_in[2].gl_Position.xy - triCenter;
+    vec2 p1p2 = normalize(p2 - p1);
+    vec2 n_p1p2 = vec2(p1p2.y, -p1p2.x);
 
-        gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0);
-        distFromEdge = vec3(0,0,area/length(v2));
+    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
 
-        gl_PrimitiveID = gl_PrimitiveIDIn;
+    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
+    EmitVertex();
 
-        EmitVertex();
+    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
+
+    gl_Position = gl_in[1].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
+    EmitVertex();
+
+    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p1p2/500*wireframeWidth, 0,0);
+    EmitVertex();
+
+    // --------- 3
+
+    vec2 p2p0 = normalize(p0 - p2);
+    vec2 n_p2p0 = vec2(p2p0.y, -p2p0.x);
+
+    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
+
+    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
+    EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0);
+    EmitVertex();
+
+    gl_Position = gl_in[2].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
+    EmitVertex();
+
+    gl_Position = gl_in[0].gl_Position - vec4(0,0,0.001,0) - vec4(n_p2p0/500*wireframeWidth, 0,0);
+    EmitVertex();
 
     EndPrimitive();
 }

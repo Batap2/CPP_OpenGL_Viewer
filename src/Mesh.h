@@ -34,6 +34,8 @@ public:
     GLuint diffuse_texture_LOC, float_texture_LOC;
     std::string object_path, name;
 
+    bool visible = true;
+
     std::vector <glm::vec3> vertices;
     std::vector <glm::vec3> normals;
     std::vector <glm::vec3> selectedEdges;

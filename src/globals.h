@@ -58,7 +58,7 @@ inline GLuint projectionLocFS, modelviewLocFS, camPosLocFS;
 inline GLuint projectionLocNS, modelviewLocNS;
 
 // uniform for wireframe display shader
-inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc;
+inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc, wireframeWidthLocWS;
 
 inline GLuint normalDisplayLengthLoc;
 
@@ -91,6 +91,7 @@ inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
 inline int wireframeMode = 1;
+inline float wireframeWidth = 1;
 
 // -------------- SCENE -------------- //
 
@@ -115,7 +116,7 @@ inline int selected_light = 0;
 inline ImGuiColorEditFlags colorEditFlag = (ImGuiColorEditFlags_NoOptions);
 inline glm::vec3 old_light_color;
 inline glm::vec3 old_mesh_color;
-inline bool emissiveClick, transparentClick;
+inline bool emissiveClick, transparentClick, visibleClick;
 
 // --------------- OPENCL -------------- //
 inline std::vector<float> gpuOutputImg;

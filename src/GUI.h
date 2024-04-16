@@ -76,13 +76,18 @@ namespace GUI{
 
         ImGui::Checkbox("Display normals", &displayNormals);
 
-        if(ImGui::DragFloat("normals length", &normalDisplayLength, 0.001, 0, 9999)){
+        if(ImGui::DragFloat("Normals length", &normalDisplayLength, 0.001, 0, 9999)){
 
             glUseProgram(shaderProgram_NormalDisplay);
             glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
         }
 
         ImGui::SliderInt("Wireframe Mode", &wireframeMode, 0, 1);
+
+        if(ImGui::DragFloat("Wireframe width", &wireframeWidth, 0.01, 0, 9999)){
+            glUseProgram(shaderProgram_WireframeDisplay);
+            glUniform1f(wireframeWidthLocWS, wireframeWidth);
+        }
 
         ImGui::Separator();ImGui::Separator();
         ImGui::Text(" ");ImGui::Text(" ");
@@ -106,9 +111,6 @@ namespace GUI{
         if(ImGui::ColorEdit3("Sky Color", &skyColor[0]))
         {
         }
-        ImGui::InputInt("Denoise window size ",&window_size);
-        ImGui::InputFloat("Color distance ", &denoise_bil_colordif_val);
-        ImGui::InputFloat("Spatial distance ", &denoise_bil_distance_val);
         ImGui::Separator();ImGui::Separator();
 
         ImGui::Text(" ");ImGui::Text(" ");
@@ -161,6 +163,12 @@ namespace GUI{
                 transparentClick = false;
             }
 
+            if(scene_meshes[selected_object]->visible){
+                visibleClick = true;
+            } else {
+                visibleClick = false;
+            }
+
             if(ImGui::Checkbox("Emissive", &emissiveClick)){
                 if(emissiveClick != scene_meshes[selected_object]->material.isEmissive){
                     if(emissiveClick){
@@ -178,6 +186,18 @@ namespace GUI{
                         scene_meshes[selected_object]->material.isTransparent = 1.0f;
                     } else {
                         scene_meshes[selected_object]->material.isTransparent = 0.0f;
+                    }
+                    scene_meshes[selected_object]->send_material_to_shaders();
+                    render_number = 0;
+                }
+            }
+
+            if(ImGui::Checkbox("Visible", &visibleClick)){
+                if(visibleClick != scene_meshes[selected_object]->visible){
+                    if(visibleClick){
+                        scene_meshes[selected_object]->visible = true;
+                    } else {
+                        scene_meshes[selected_object]->visible = false;
                     }
                     scene_meshes[selected_object]->send_material_to_shaders();
                     render_number = 0;

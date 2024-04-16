@@ -232,7 +232,8 @@ void display() {
             glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
         }
 
-        glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+        if(meshP->visible)
+            //glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
 
         if(displayNormals)
         {
@@ -274,8 +275,6 @@ int main(int argc, char* argv[]){
 
     glEnable(GL_DEPTH_TEST);
 
-//    glEnable(GL_CULL_FACE);
-//    glCullFace(GL_FRONT_AND_BACK);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -290,13 +289,14 @@ int main(int argc, char* argv[]){
 
 
     SceneOperations::initSceneLights();
-    SceneOperations::openFile("../data/bunny.obj");
-
-    SceneOperations::openFile("../data/doon.obj");
-    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
-    scene_objects[0]->applyTransform();
-
-    //scene_objects[2]->rotate(vec3(0,1,0), 0.1);
+//    SceneOperations::openFile("../data/bunny.obj");
+//
+//    SceneOperations::openFile("../data/doon.obj");
+//    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
+//    scene_objects[0]->applyTransform();
+//
+//    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
+    SceneOperations::openFile("../data/2tri.obj");
 
     SceneOperations::init_flat_screen();
 
