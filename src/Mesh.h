@@ -41,6 +41,7 @@ public:
     std::vector <glm::vec3> selectedEdges;
     std::vector<Tri> triangle_indicies;
     std::vector <unsigned int> indicies;
+    std::vector <unsigned int> wireframeLineIndicies;
     std::vector<float> uv;
 
     Material material;

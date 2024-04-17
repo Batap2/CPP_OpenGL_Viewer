@@ -119,6 +119,19 @@ void Mesh::openglInit()
                  gpuOutputImg.data()
     );
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    for(auto &tri : triangle_indicies){
+        wireframeLineIndicies.push_back(0);
+        wireframeLineIndicies.push_back(1);
+
+        wireframeLineIndicies.push_back(1);
+        wireframeLineIndicies.push_back(2);
+
+        wireframeLineIndicies.push_back(2);
+        wireframeLineIndicies.push_back(0);
+    }
+
+
 }
 
 void Mesh::change_texture(FloatTexture tex)

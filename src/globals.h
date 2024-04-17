@@ -91,7 +91,7 @@ inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
 inline int wireframeMode = 1;
-inline float wireframeWidth = 1;
+inline float wireframeWidth = 0.01;
 
 // -------------- SCENE -------------- //
 
