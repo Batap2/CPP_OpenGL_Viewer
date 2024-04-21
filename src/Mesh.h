@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <unordered_map>
+
 
 #include <GL/glew.h>
 
@@ -25,11 +27,32 @@ struct Tri{
     }
 };
 
+typedef std::pair<unsigned int, unsigned int> Edge;
+
+// For edgeMap
+struct EdgeHash {
+    template<class T1, class T2>
+    std::size_t operator()(const std::pair<T1, T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+};
+
+struct EdgeEqual {
+    template<class T1, class T2>
+    bool operator()(const std::pair<T1, T2> &lhs, const std::pair<T1, T2> &rhs) const {
+        return lhs.first == rhs.first && lhs.second == rhs.second;
+    }
+};
+
 class Mesh{
 private:
     bool textureBufferAlreadyCreated;
+
+    void createWireframeIndicies();
 public:
-    GLuint VAO, VBO, EBO, NBO, UVBO, diffuse_texture_id, float_texture_id;
+    GLuint VAO, VBO, EBO, NBO, UVBO, diffuse_texture_id, float_texture_id, VAO_wireframe, VBO_wireframe, EBO_wireframe;
     GLuint ambiant_bo, diffuse_bo, specular_bo, mra_bo, useTexture_bo;
     GLuint diffuse_texture_LOC, float_texture_LOC;
     std::string object_path, name;
@@ -40,7 +63,7 @@ public:
     std::vector <glm::vec3> normals;
     std::vector <glm::vec3> selectedEdges;
     std::vector<Tri> triangle_indicies;
-    std::vector <unsigned int> indicies;
+    std::vector <unsigned int> indices;
     std::vector <unsigned int> wireframeLineIndicies;
     std::vector<float> uv;
 

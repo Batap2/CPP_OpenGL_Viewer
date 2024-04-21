@@ -20,7 +20,7 @@ uniform mat4 projection;
 uniform vec2 screenSize;
 uniform float wireframeWidth;
 
-noperspective out vec3 distFromEdge;
+out vec2 uv;
 
 void main() {
 
@@ -50,42 +50,24 @@ void main() {
     vec2 n = normalize(vec2(-line.y, line.x)) * wireframeWidth;
     vec2 offset = normalize(line) * wireframeWidth;
 
+    float lineLength = line.length();
+
     gl_Position = vec4(startInNDC + n - offset,0,1);
+    uv = vec2(-lineLength,1);
     EmitVertex();
 
     gl_Position = vec4(startInNDC - n - offset,0,1);
+    uv = vec2(-lineLength,-1);
     EmitVertex();
 
     gl_Position = vec4(endInNDC + n + offset,0,1);
+    uv = vec2(lineLength,1);
     EmitVertex();
 
     gl_Position = vec4(endInNDC - n + offset,0,1);
+    uv = vec2(lineLength,-1);
     EmitVertex();
 
-
-//    gl_Position = vec4(p1 + n_p0p1*wireframeWidth, 0,1);
-//    EmitVertex();
-//
-//    gl_Position = vec4(p1 - n_p0p1*wireframeWidth, 0,1);
-//    EmitVertex();
-
-
-
-
-
-    // --------- 2
-
-//    gl_Position = vec4(p1 + n_p1p2*wireframeWidth, 0,1);
-//    EmitVertex();
-//
-//    gl_Position = vec4(p1 - n_p1p2*wireframeWidth, 0,1);
-//    EmitVertex();
-//
-//    gl_Position = vec4(p2 + n_p2p0*wireframeWidth, 0,1);
-//    EmitVertex();
-//
-//    gl_Position = vec4(p2 - n_p2p0*wireframeWidth, 0,1);
-//    EmitVertex();
 
     EndPrimitive();
 }

@@ -15,6 +15,10 @@ void Mesh::destroy_buffers(){
     glDeleteBuffers(1, &diffuse_bo);
     glDeleteBuffers(1, &specular_bo);
     glDeleteBuffers(1, &mra_bo);
+
+    glDeleteVertexArrays(1, &VAO_wireframe);
+    glDeleteBuffers(1, &VBO_wireframe);
+    glDeleteBuffers(1, &EBO_wireframe);
 }
 
 void Mesh::openglInit()
@@ -46,7 +50,7 @@ void Mesh::openglInit()
 
     // Bind EBO and copy index data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indicies.size(), indicies.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
     // Bind normals to layout location 1
     glBindBuffer(GL_ARRAY_BUFFER, NBO);
@@ -120,18 +124,25 @@ void Mesh::openglInit()
     );
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    for(auto &tri : triangle_indicies){
-        wireframeLineIndicies.push_back(0);
-        wireframeLineIndicies.push_back(1);
+    // ------------------------ WireFrame VAO -------------------------
 
-        wireframeLineIndicies.push_back(1);
-        wireframeLineIndicies.push_back(2);
+    createWireframeIndicies();
 
-        wireframeLineIndicies.push_back(2);
-        wireframeLineIndicies.push_back(0);
-    }
+    glGenVertexArrays(1, &VAO_wireframe);
+    glGenBuffers(1, &VBO_wireframe);
+    glGenBuffers(1, &EBO_wireframe);
 
 
+    glBindVertexArray(VAO_wireframe);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_wireframe);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_wireframe);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * wireframeLineIndicies.size(), wireframeLineIndicies.data(), GL_STATIC_DRAW);
 }
 
 void Mesh::change_texture(FloatTexture tex)
@@ -272,4 +283,70 @@ void Mesh::applyTransform(glm::mat4 transform)
     // Bind normals to layout location 1
     glBindBuffer(GL_ARRAY_BUFFER, NBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normals.size(), normals.data());
+}
+
+void Mesh::createWireframeIndicies()
+{
+    std::vector<Edge> edges;
+    std::unordered_map<Edge, unsigned int[2], EdgeHash, EdgeEqual> edgeFaceAdjacency;
+
+    for (int i = 0; i < indices.size() / 3; ++i) {
+        for (int e = 0; e < 3; ++e) {
+            int v1 = indices[i*3 + e % 3];
+            int v2 = indices[i*3 + (e + 1) % 3];
+            Edge edge = std::make_pair(std::min(v1, v2), std::max(v1, v2));
+
+            if (edgeFaceAdjacency.find(edge) == edgeFaceAdjacency.end()) {
+                edgeFaceAdjacency[edge][0] = i*3;
+                edgeFaceAdjacency[edge][1] = -1;
+            } else {
+                edgeFaceAdjacency[edge][1] = i*3;
+            }
+        }
+    }
+
+
+    for (const auto &edge: edgeFaceAdjacency)
+    {
+        if(edge.second[1] == -1){
+            edges.push_back(edge.first);
+            continue;
+        }
+
+        unsigned int tri1 = edge.second[0];
+        unsigned int tri2 = edge.second[1];
+
+        glm::vec3 p0 = vertices[indices[tri1]];
+        glm::vec3 p1 = vertices[indices[tri1+1]];
+        glm::vec3 p2 = vertices[indices[tri1+2]];
+
+        glm::vec3 p02 = vertices[indices[tri2]];
+        glm::vec3 p12 = vertices[indices[tri2+1]];
+        glm::vec3 p22 = vertices[indices[tri2+2]];
+
+        glm::vec3 u1 = p1 - p0;
+        glm::vec3 v1 = p2 - p0;
+        glm::vec3 u2 = p12 - p02;
+        glm::vec3 v2 = p22 - p02;
+
+
+        glm::vec3 n1 = glm::cross(u1,v1);
+        glm::vec3 n2 = glm::cross(u2,v2);
+
+        float angle = atan2(glm::length(glm::cross(n1,n2)), glm::dot(n1,n2));
+
+        std::cout << angle << "\n";
+
+        if(angle > 0.77){
+            edges.push_back(edge.first);
+        }
+
+    }
+
+
+
+    for (auto &edge : edges){
+        wireframeLineIndicies.push_back(edge.first);
+        wireframeLineIndicies.push_back(edge.second);
+    }
 }

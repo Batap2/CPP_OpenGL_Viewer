@@ -58,7 +58,7 @@ inline GLuint projectionLocFS, modelviewLocFS, camPosLocFS;
 inline GLuint projectionLocNS, modelviewLocNS;
 
 // uniform for wireframe display shader
-inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc, wireframeWidthLocWS;
+inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc, wireframeWidthLocWS, wireframeColorLocWS;
 
 inline GLuint normalDisplayLengthLoc;
 
@@ -92,6 +92,7 @@ inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
 inline int wireframeMode = 1;
 inline float wireframeWidth = 0.01;
+inline glm::vec4 wireFrameColor = glm::vec4(1,0,0,1);
 
 // -------------- SCENE -------------- //
 

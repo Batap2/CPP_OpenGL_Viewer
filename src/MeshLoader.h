@@ -59,7 +59,7 @@ namespace MeshLoader{
 
             newMesh->vertices.resize (sizeV);
             newMesh->triangle_indicies.resize (sizeT);
-            newMesh->indicies.resize (sizeT*3);
+            newMesh->indices.resize (sizeT * 3);
             newMesh->normals.resize(sizeV);
 
             newMesh->name = aiMesh->mName.C_Str();
@@ -93,9 +93,9 @@ namespace MeshLoader{
 
                 int offset = j * 3;
 
-                newMesh->indicies[offset] = ind1;
-                newMesh->indicies[offset + 1] = ind2;
-                newMesh->indicies[offset + 2] = ind3;
+                newMesh->indices[offset] = ind1;
+                newMesh->indices[offset + 1] = ind2;
+                newMesh->indices[offset + 2] = ind3;
             }
 
             aiAABB aabb = aiMesh->mAABB;

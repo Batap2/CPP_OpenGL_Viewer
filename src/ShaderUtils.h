@@ -109,9 +109,12 @@ namespace ShaderUtils{
         modelviewLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "modelview");
         screenSizeLoc = glGetUniformLocation(shaderProgram_WireframeDisplay, "screenSize");
         wireframeWidthLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "wireframeWidth");
+        wireframeColorLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "wireframeColor");
         glUseProgram(shaderProgram_WireframeDisplay);
         glUniform2f(screenSizeLoc, (float)window_width, (float)window_height);
         glUniform1f(wireframeWidthLocWS, wireframeWidth);
+        glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
+
 
         glUseProgram(shaderProgram_NormalDisplay);
         normalDisplayLengthLoc = glGetUniformLocation(shaderProgram_NormalDisplay, "normalDisplayLength");

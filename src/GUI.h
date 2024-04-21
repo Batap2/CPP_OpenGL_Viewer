@@ -89,6 +89,12 @@ namespace GUI{
             glUniform1f(wireframeWidthLocWS, wireframeWidth);
         }
 
+        if(ImGui::ColorEdit4("Wireframe Color", &wireFrameColor[0]), colorEditFlag)
+        {
+            glUseProgram(shaderProgram_WireframeDisplay);
+            glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
+        }
+
         ImGui::Separator();ImGui::Separator();
         ImGui::Text(" ");ImGui::Text(" ");
 

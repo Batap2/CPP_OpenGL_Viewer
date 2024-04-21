@@ -233,17 +233,18 @@ void display() {
         }
 
         if(meshP->visible)
-            glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, meshP->indices.size(), GL_UNSIGNED_INT, 0);
 
         if(displayNormals)
         {
             glUseProgram(shaderProgram_NormalDisplay);
-            glDrawElements(GL_TRIANGLES, meshP->indicies.size(), GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, meshP->indices.size(), GL_UNSIGNED_INT, 0);
         }
 
         if(wireframeMode)
         {
-            //glClear(GL_DEPTH_BUFFER_BIT);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            glBindVertexArray(meshP->VAO_wireframe);
             glUseProgram(shaderProgram_WireframeDisplay);
             glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
         }
@@ -290,14 +291,16 @@ int main(int argc, char* argv[]){
 
 
     SceneOperations::initSceneLights();
-    SceneOperations::openFile("../data/bunny.obj");
-
-    SceneOperations::openFile("../data/doon.obj");
-    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
-    scene_objects[0]->applyTransform();
-
-    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
+//    SceneOperations::openFile("../data/bunny.obj");
+//
+//    SceneOperations::openFile("../data/doon.obj");
+//    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
+//    scene_objects[0]->applyTransform();
+//
+//    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
     //SceneOperations::openFile("../data/tri.obj");
+
+    SceneOperations::openFile("../data/testWireframe.obj");
 
     SceneOperations::init_flat_screen();
 
@@ -318,7 +321,7 @@ int main(int argc, char* argv[]){
         }
 
 
-        scene_objects[2]->applyTransform();
+        //scene_objects[2]->applyTransform();
 
         //glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);

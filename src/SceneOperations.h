@@ -68,12 +68,12 @@ namespace SceneOperations
         }
 
 
-        flat_screen.indicies.push_back(0);
-        flat_screen.indicies.push_back(1);
-        flat_screen.indicies.push_back(2);
-        flat_screen.indicies.push_back(2);
-        flat_screen.indicies.push_back(3);
-        flat_screen.indicies.push_back(0);
+        flat_screen.indices.push_back(0);
+        flat_screen.indices.push_back(1);
+        flat_screen.indices.push_back(2);
+        flat_screen.indices.push_back(2);
+        flat_screen.indices.push_back(3);
+        flat_screen.indices.push_back(0);
 
         flat_screen.openglInit();
     }
