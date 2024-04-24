@@ -206,6 +206,12 @@ void display() {
         glUniformMatrix4fv(modelviewLocFS, 1, GL_FALSE, &modelview[0][0]);
     }
 
+    if(wireframeMode == 2)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
 
     if(displayNormals)
@@ -248,6 +254,17 @@ void display() {
             glUseProgram(shaderProgram_WireframeDisplay);
             glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
         }
+    }
+
+    if(wireframeMode ==2)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glUseProgram(shaderProgram_frameBufferWireframe);
+        glBindVertexArray(frameBufferQuadVAO);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glEnable(GL_DEPTH_TEST);
     }
 }
 

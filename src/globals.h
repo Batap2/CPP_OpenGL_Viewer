@@ -43,10 +43,10 @@ inline mat4 projection, modelview, model, view;
 inline std::mt19937 rng;
 
 // -------------- SHADER & UNIFORM LOCATIONS -------------- //
-inline GLuint vertexShader_main;
+inline GLuint vertexShader_main, vertexShader_frameBufferWireframe;
 inline GLuint geometryShader_main, geometryShader_Flat, geometryShader_NormalDisplay, geometryShader_WireframeDisplay;
-inline GLuint fragmentShader_main,  fragmentShader_NormalDisplay, fragmentShader_WireframeDisplay;
-inline GLuint shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay, shaderProgram_WireframeDisplay;
+inline GLuint fragmentShader_main,  fragmentShader_NormalDisplay, fragmentShader_WireframeDisplay, fragmentShader_frameBufferWireframe;
+inline GLuint shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay, shaderProgram_WireframeDisplay, shaderProgram_frameBufferWireframe;
 
 // uniform for main shader
 inline GLuint projectionLoc, modelviewLoc, camPosLoc;
@@ -63,6 +63,14 @@ inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc, wireframeWidthLocW
 inline GLuint normalDisplayLengthLoc;
 
 inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
+
+// Framebuffer things
+inline GLuint framebuffer;
+inline GLuint textureColorBuffer;
+inline GLuint renderBuffer;
+
+inline GLuint frameBufferQuadVAO, frameBufferQuadVBO;
+
 
 // -------------- SHADER -------------- //
 inline int lightsMaxNumber = 64;
@@ -90,9 +98,9 @@ inline std::vector<float> actual_render(window_height*window_width*3);
 inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
-inline int wireframeMode = 1;
-inline float wireframeWidth = 0.01;
-inline glm::vec4 wireFrameColor = glm::vec4(1,0,0,1);
+inline int wireframeMode = 2;
+inline float wireframeWidth = 0.002;
+inline glm::vec4 wireFrameColor = glm::vec4(0.2,0.8,1,1);
 
 // -------------- SCENE -------------- //
 
@@ -121,27 +129,7 @@ inline bool emissiveClick, transparentClick, visibleClick;
 
 // --------------- OPENCL -------------- //
 inline std::vector<float> gpuOutputImg;
-inline size_t gpuOutputImg_size;
-
-inline int meshNbr;
-inline int lightNbr;
-inline int textureNbr;
-inline int texturesSize;
 
 //Denoise stuff
 inline int window_size = 5;
-inline float denoise_bil_colordif_val = 1;
-inline float denoise_bil_distance_val = 1;
-
-inline std::vector<float> vertices_array;
-inline std::vector<unsigned int> indices_array;
-inline std::vector<unsigned int> splitMesh_array;
-inline std::vector<unsigned int> splitMeshTri_array;
-inline std::vector<float> materials_array;
-inline std::vector<float> lights_array;
-inline std::vector<float> bbox_array;
-inline std::vector<unsigned char> texturesData_array;
-inline std::vector<unsigned int >splitTexture_array;
-inline std::vector<float> uv_array;
-inline std::vector<unsigned int> splitUV_array;
 #endif

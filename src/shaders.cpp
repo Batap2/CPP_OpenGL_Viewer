@@ -90,3 +90,25 @@ GLuint Shader::init_program (GLuint vertexShader_, GLuint geometryShader_, GLuin
     }
     return program; 
 }
+
+GLuint Shader::init_program (GLuint vertexShader_, GLuint fragmentShader_){
+    GLuint program = glCreateProgram();
+    GLint linked;
+
+    glAttachShader(program, vertexShader_);
+    glAttachShader(program, fragmentShader_);
+
+    glLinkProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+
+    if (linked){
+        glDetachShader(program, vertexShader_);
+        glDetachShader(program, fragmentShader_);
+        glUseProgram(program);
+    }
+    else{
+        program_errors(program);
+        throw 4;
+    }
+    return program;
+}

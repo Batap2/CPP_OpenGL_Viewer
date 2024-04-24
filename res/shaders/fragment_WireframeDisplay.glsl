@@ -10,5 +10,5 @@ void main (void)
 {
         float pattern = step(0,cos(uv.x*10));
 
-        fragColor = wireframeColor * pattern;
+        fragColor = wireframeColor;
 }

@@ -74,10 +74,37 @@ namespace ShaderUtils{
 
     }
 
+    void updateFrameBufferSize()
+    {
+        glGenFramebuffers(1, &framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+        glGenTextures(1, &textureColorBuffer);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, window_width, window_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+
+        glGenRenderbuffers(1, &renderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, window_width, window_height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
+
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
     void init_shaders()
     {
         Shader shader;
         vertexShader_main = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex.glsl");
+        vertexShader_frameBufferWireframe = shader.init_shaders(GL_VERTEX_SHADER, "../res/shaders/vertex_frameBufferWireframe.glsl");
 
         geometryShader_main = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_main.glsl");
         geometryShader_Flat = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_Flat.glsl");
@@ -87,12 +114,14 @@ namespace ShaderUtils{
         fragmentShader_main = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_main.glsl");
         fragmentShader_NormalDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_NormalDisplay.glsl");
         fragmentShader_WireframeDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_WireframeDisplay.glsl") ;
-
+        fragmentShader_frameBufferWireframe = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_FrameBufferWireframe.glsl");
 
         shaderProgram_main = shader.init_program(vertexShader_main, geometryShader_main, fragmentShader_main) ;
         shaderProgram_Flat = shader.init_program(vertexShader_main, geometryShader_Flat, fragmentShader_main);
         shaderProgram_NormalDisplay = shader.init_program(vertexShader_main, geometryShader_NormalDisplay, fragmentShader_NormalDisplay);
         shaderProgram_WireframeDisplay = shader.init_program(vertexShader_main, geometryShader_WireframeDisplay, fragmentShader_WireframeDisplay);
+        shaderProgram_frameBufferWireframe = shader.init_program(vertexShader_frameBufferWireframe, fragmentShader_frameBufferWireframe);
+
 
         projectionLoc = glGetUniformLocation(shaderProgram_main, "projection");
         modelviewLoc = glGetUniformLocation(shaderProgram_main, "modelview");
@@ -121,7 +150,34 @@ namespace ShaderUtils{
         glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
 
         glUseProgram(shaderProgram_main);
+
+
+        // init framebuffer
+        updateFrameBufferSize();
+
+        float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+                // positions   // texCoords
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                -1.0f, -1.0f,  0.0f, 0.0f,
+                1.0f, -1.0f,  1.0f, 0.0f,
+
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                1.0f, -1.0f,  1.0f, 0.0f,
+                1.0f,  1.0f,  1.0f, 1.0f
+        };
+
+        glGenVertexArrays(1, &frameBufferQuadVAO);
+        glGenBuffers(1, &frameBufferQuadVBO);
+        glBindVertexArray(frameBufferQuadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, frameBufferQuadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     }
+
+
 
     void reshape(GLFWwindow* window, int width, int height){
         window_width = width;
@@ -143,6 +199,8 @@ namespace ShaderUtils{
                 [](GLuint sha){
                     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, &projection[0][0]);
                 });
+
+        updateFrameBufferSize();
     }
 
     void sendLightsToShaders()
