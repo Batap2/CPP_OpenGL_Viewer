@@ -87,12 +87,22 @@ namespace GUI{
         if(ImGui::DragFloat("Wireframe width", &wireframeWidth, 0.001, 0, 2)){
             glUseProgram(shaderProgram_WireframeDisplay);
             glUniform1f(wireframeWidthLocWS, wireframeWidth);
+            glUseProgram(shaderProgram_frameBufferWireframe);
+            glUniform1f(wireframeWidthLocFBS, wireframeWidth);
         }
+
 
         if(ImGui::ColorEdit4("Wireframe Color", &wireFrameColor[0]), colorEditFlag)
         {
-            glUseProgram(shaderProgram_WireframeDisplay);
-            glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
+            if(oldWireFrameColor != wireFrameColor)
+            {
+                glUseProgram(shaderProgram_WireframeDisplay);
+                glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
+                glUseProgram(shaderProgram_frameBufferWireframe);
+                glUniform4fv(wireframeColorLocFBS, 1, &wireFrameColor[0]);
+
+                oldWireFrameColor = wireFrameColor;
+            }
         }
 
         ImGui::Separator();ImGui::Separator();

@@ -161,11 +161,20 @@ namespace ShaderUtils{
         normalDisplayLengthLoc = glGetUniformLocation(shaderProgram_NormalDisplay, "normalDisplayLength");
         glUniform1f(normalDisplayLengthLoc, normalDisplayLength);
 
-        glUseProgram(shaderProgram_main);
+
 
 
         // init framebuffer
+        glUseProgram(shaderProgram_frameBufferWireframe);
+
         updateFrameBufferSize();
+
+        glUniform1i(glGetUniformLocation(shaderProgram_frameBufferWireframe, "colorTex"), 0);
+        glUniform1i(glGetUniformLocation(shaderProgram_frameBufferWireframe, "depthTex"), 1);
+        wireframeWidthLocFBS = glGetUniformLocation(shaderProgram_frameBufferWireframe, "wireframeWidth");
+        wireframeColorLocFBS = glGetUniformLocation(shaderProgram_frameBufferWireframe, "wireframeColor");
+        glUniform4fv(wireframeColorLocFBS, 1, &wireFrameColor[0]);
+        glUniform1f(wireframeWidthLocFBS, wireframeWidth);
 
         float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
                 // positions   // texCoords
@@ -187,6 +196,9 @@ namespace ShaderUtils{
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+
+        glUseProgram(shaderProgram_main);
     }
 
 

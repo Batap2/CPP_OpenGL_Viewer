@@ -209,7 +209,7 @@ void display() {
     if(wireframeMode == 2)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glClearColor(0,0,0,1);
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
@@ -251,8 +251,10 @@ void display() {
         {
             //glClear(GL_DEPTH_BUFFER_BIT);
             glBindVertexArray(meshP->VAO_wireframe);
+            glDisable(GL_DEPTH_TEST);
             glUseProgram(shaderProgram_WireframeDisplay);
             glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
+            glEnable(GL_DEPTH_TEST);
         }
     }
 
@@ -261,11 +263,13 @@ void display() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDisable(GL_DEPTH_TEST);
         glUseProgram(shaderProgram_frameBufferWireframe);
-        glBindVertexArray(frameBufferQuadVAO);
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthBuffer);
+
+        glBindVertexArray(frameBufferQuadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glEnable(GL_DEPTH_TEST);
     }

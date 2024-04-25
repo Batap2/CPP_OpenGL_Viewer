@@ -70,6 +70,8 @@ inline GLuint textureColorBuffer;
 inline GLuint depthBuffer;
 inline GLuint renderBuffer;
 
+inline GLuint wireframeColorLocFBS, wireframeWidthLocFBS;
+
 inline GLuint frameBufferQuadVAO, frameBufferQuadVBO;
 
 
@@ -102,6 +104,7 @@ inline float normalDisplayLength = 0.1f;
 inline int wireframeMode = 2;
 inline float wireframeWidth = 0.002;
 inline glm::vec4 wireFrameColor = glm::vec4(0.2,0.8,1,1);
+inline glm::vec4 oldWireFrameColor = wireFrameColor;
 
 // -------------- SCENE -------------- //
 
