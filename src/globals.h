@@ -67,6 +67,7 @@ inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
 // Framebuffer things
 inline GLuint framebuffer;
 inline GLuint textureColorBuffer;
+inline GLuint depthBuffer;
 inline GLuint renderBuffer;
 
 inline GLuint frameBufferQuadVAO, frameBufferQuadVBO;

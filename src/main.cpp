@@ -249,7 +249,7 @@ void display() {
 
         if(wireframeMode)
         {
-            glClear(GL_DEPTH_BUFFER_BIT);
+            //glClear(GL_DEPTH_BUFFER_BIT);
             glBindVertexArray(meshP->VAO_wireframe);
             glUseProgram(shaderProgram_WireframeDisplay);
             glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
@@ -262,7 +262,10 @@ void display() {
         glDisable(GL_DEPTH_TEST);
         glUseProgram(shaderProgram_frameBufferWireframe);
         glBindVertexArray(frameBufferQuadVAO);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthBuffer);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glEnable(GL_DEPTH_TEST);
     }
