@@ -243,21 +243,24 @@ void display() {
 
         if(displayNormals)
         {
+            glDisable(GL_DEPTH_TEST);
             glUseProgram(shaderProgram_NormalDisplay);
             glDrawElements(GL_TRIANGLES, meshP->indices.size(), GL_UNSIGNED_INT, 0);
+            glEnable(GL_DEPTH_TEST);
         }
 
         if(wireframeMode)
         {
             //glClear(GL_DEPTH_BUFFER_BIT);
-            glBindVertexArray(meshP->VAO_wireframe);
-            glDisable(GL_DEPTH_TEST);
-            glUseProgram(shaderProgram_WireframeDisplay);
-            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
-            glEnable(GL_DEPTH_TEST);
+//            glBindVertexArray(meshP->VAO_wireframe);
+//            glDisable(GL_DEPTH_TEST);
+//            glUseProgram(shaderProgram_WireframeDisplay);
+//            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
+//            glEnable(GL_DEPTH_TEST);
         }
-    }
 
+
+    }
     if(wireframeMode ==2)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -273,6 +276,7 @@ void display() {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glEnable(GL_DEPTH_TEST);
     }
+
 }
 
 int main(int argc, char* argv[]){
@@ -324,7 +328,7 @@ int main(int argc, char* argv[]){
 //    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
     //SceneOperations::openFile("../data/tri.obj");
 
-    SceneOperations::openFile("../data/testWireframe.obj");
+    SceneOperations::openFile("../data/tubePlane.obj");
 
     SceneOperations::init_flat_screen();
 
