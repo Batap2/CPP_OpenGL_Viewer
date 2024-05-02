@@ -21,7 +21,7 @@ inline vec3 eye;
 inline vec3 up;
 
 
-inline vec3 eyeinit(0.0, 0.2, 4.0);
+inline vec3 eyeinit(-2, 0, -2);
 inline vec3 upinit(0.0, 1.0, 0.0);
 inline vec3 center(0.0, 0.0, 0.0);
 inline int mouse_mode    = 1;
@@ -30,10 +30,10 @@ inline int window_width  = 1600;
 inline int window_height =900;
 inline int amountinit    = 5;
 inline float fovy        = 60.0f;
-inline float zFar        = 99.0f;
+inline float zFar        = 1000.0f;
 inline float zNear       = 0.1f;
 inline bool firstMouse = true;
-inline float yaw   = -90.0f;
+inline float yaw   =  0.0f;
 inline float pitch =  0.0f;
 inline float lastX =  window_width / 2.0;
 inline float lastY =  window_height / 2.0;
@@ -102,7 +102,7 @@ inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
 inline int wireframeMode = 2;
-inline float wireframeWidth = 0.002;
+inline float wireframeWidth = 0.001;
 inline glm::vec4 wireFrameColor = glm::vec4(0.2,0.8,1,1);
 inline glm::vec4 oldWireFrameColor = wireFrameColor;
 
@@ -110,7 +110,7 @@ inline glm::vec4 oldWireFrameColor = wireFrameColor;
 
 inline Mesh flat_screen;
 
-inline Camera mainCamera;
+inline Camera mainCamera(eyeinit, vec3(1,0,0));
 inline float cameraSpeed = 0.05f;
 
 inline std::vector<Mesh*> scene_meshes;

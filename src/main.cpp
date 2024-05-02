@@ -126,19 +126,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         yaw   += xoffset;
         pitch += yoffset;
 
-        if(pitch > 89.0f)
-            pitch = 89.0f;
-        if(pitch < -89.0f)
-            pitch = -89.0f;
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        direction.y = sin(glm::radians(pitch));
-        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-        mainCamera.cameraDirection = glm::normalize(direction);
-        mainCamera.cameraRight = glm::normalize(glm::cross(mainCamera.cameraDirection, upinit));
-        mainCamera.cameraUp = glm::cross(mainCamera.cameraRight, mainCamera.cameraDirection);
+        mainCamera.updatePos(pitch, yaw);
         render_number = 0;
 
     } else {
@@ -184,9 +172,15 @@ void manageInput()
 }
 
 void display() {
-    glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    uint32_t meshCount = 1;
+
+    glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
+    glClearStencil(0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+
+    glStencilMask(0xFF);
 
     modelview = glm::lookAt(mainCamera.cameraPos,mainCamera.cameraPos + mainCamera.cameraDirection, mainCamera.cameraUp);
 
@@ -210,7 +204,7 @@ void display() {
     {
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
 
@@ -232,6 +226,8 @@ void display() {
     {
         glUseProgram(usedShader);
 
+        glStencilFunc(GL_ALWAYS, meshCount, 0xFF);
+
         glBindVertexArray(meshP->VAO);
         if(meshP->material.useTexture){
             glActiveTexture(GL_TEXTURE0 + 0);
@@ -249,22 +245,13 @@ void display() {
             glEnable(GL_DEPTH_TEST);
         }
 
-        if(wireframeMode)
-        {
-            //glClear(GL_DEPTH_BUFFER_BIT);
-//            glBindVertexArray(meshP->VAO_wireframe);
-//            glDisable(GL_DEPTH_TEST);
-//            glUseProgram(shaderProgram_WireframeDisplay);
-//            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
-//            glEnable(GL_DEPTH_TEST);
-        }
-
+        meshCount++;
 
     }
+
     if(wireframeMode ==2)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST);
         glUseProgram(shaderProgram_frameBufferWireframe);
 
         glActiveTexture(GL_TEXTURE0);
@@ -272,10 +259,25 @@ void display() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthBuffer);
 
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_STENCIL_TEST);
         glBindVertexArray(frameBufferQuadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
     }
+
+    if(wireframeMode)
+    {
+        glDisable(GL_DEPTH_TEST);
+        for(Mesh* meshP : scene_meshes) {
+            glBindVertexArray(meshP->VAO_wireframe);
+            glUseProgram(shaderProgram_WireframeDisplay);
+            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
+        }
+        glEnable(GL_DEPTH_TEST);
+    }
+
 
 }
 
@@ -305,6 +307,8 @@ int main(int argc, char* argv[]){
 
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -318,14 +322,16 @@ int main(int argc, char* argv[]){
     glfwSetScrollCallback(window, scroll_callback);
 
 
+    mainCamera.updatePos(pitch, yaw);
+
     SceneOperations::initSceneLights();
 //    SceneOperations::openFile("../data/bunny.obj");
 //
-//    SceneOperations::openFile("../data/doon.obj");
+    SceneOperations::openFile("../data/doon.obj");
 //    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
 //    scene_objects[0]->applyTransform();
-//
-//    scene_objects[2]->rotate(vec3(0,1,0), 0.1);
+
+    scene_objects[0]->rotate(vec3(0,1,1), 0.1);
     //SceneOperations::openFile("../data/tri.obj");
 
     SceneOperations::openFile("../data/tubePlane.obj");
@@ -334,8 +340,6 @@ int main(int argc, char* argv[]){
 
     ShaderUtils::reshape(window, window_width, window_height);
     ShaderUtils::sendLightsToShaders();
-
-    mainCamera.cameraPos = vec3(0,0.2,4);
 
     rng.seed(std::random_device()());
 
@@ -349,9 +353,8 @@ int main(int argc, char* argv[]){
         }
 
 
-        //scene_objects[2]->applyTransform();
+        scene_objects[0]->applyTransform();
 
-        //glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
     }
 

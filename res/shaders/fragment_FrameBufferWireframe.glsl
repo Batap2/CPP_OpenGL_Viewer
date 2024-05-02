@@ -3,17 +3,13 @@
 in vec2 texCoords;
 
 uniform sampler2D colorTex;
-uniform sampler2D depthTex;
+uniform usampler2D depthTex;
 uniform vec4 wireframeColor;
 uniform float wireframeWidth;
 
 out vec4 fragColor;
 
 
-vec4 processDepth(vec4 depth){
-    vec4 d = vec4(1,1,1,2) - depth;
-    return vec4(step(0.000001f, d.x),step(0.000001f, d.x),step(0.000001f, d.x),1);
-}
 
 void main() {
 
@@ -37,26 +33,25 @@ void main() {
         -1, -1, -1
     );
 
-    vec3 sampleTex[9];
+    uint index[9];
     for(int i = 0; i < 9; i++)
     {
-        sampleTex[i] = processDepth(texture(depthTex, texCoords + offsets[i])).xyz;
+
+        index[i] = texture(depthTex, texCoords + offsets[i]).x;
     }
     vec3 col = vec3(0.0);
 
-    bool black = false;
-    bool white = false;
+    bool sameIndex = true;
 
     for(int i = 0; i < 9; i++)
     {
-        if (sampleTex[i] == vec3(1.0f))
-            white = true;
-        if (sampleTex[i] == vec3(0.0f))
-            black = true;
-    }
-
-    if(black && white)
+        if (index[i] != index[4])
+        {
+            sameIndex = false;
             col = vec3(1.0f);
+            break;
+        }
+    }
 
     vec4 finalCol;
 
@@ -67,8 +62,6 @@ void main() {
         finalCol = vec4(col, 1) * wireframeColor;
     }
 
-    //fragColor = vec4(col,1) * wireframeColor + texture(colorTex, texCoords) ;
-    fragColor = finalCol;
+    fragColor = finalCol ;
 
-    //fragColor = vec4(col, 1);
 }

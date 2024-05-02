@@ -335,8 +335,6 @@ void Mesh::createWireframeIndicies()
 
         float angle = atan2(glm::length(glm::cross(n1,n2)), glm::dot(n1,n2));
 
-        std::cout << angle << "\n";
-
         if(angle > 0.77){
             edges.push_back(edge.first);
         }

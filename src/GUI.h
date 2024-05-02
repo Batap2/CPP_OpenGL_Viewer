@@ -84,7 +84,7 @@ namespace GUI{
 
         ImGui::SliderInt("Wireframe Mode", &wireframeMode, 0, 2);
 
-        if(ImGui::DragFloat("Wireframe width", &wireframeWidth, 0.001, 0, 2)){
+        if(ImGui::DragFloat("Wireframe width", &wireframeWidth, 0.00001, 0, 0.1)){
             glUseProgram(shaderProgram_WireframeDisplay);
             glUniform1f(wireframeWidthLocWS, wireframeWidth);
             glUseProgram(shaderProgram_frameBufferWireframe);

@@ -47,7 +47,7 @@ void main() {
     // --------- 1
 
     vec2 line = endInNDC - startInNDC;
-    vec2 n = normalize(vec2(-line.y, line.x)) * wireframeWidth;
+    vec2 n = normalize(vec2(-line.y, line.x)) * wireframeWidth * 1.5;
     vec2 offset = normalize(line) * wireframeWidth;
 
     float lineLength = line.length();
