@@ -65,6 +65,7 @@ public:
     std::vector<Tri> triangle_indicies;
     std::vector <unsigned int> indices;
     std::vector <unsigned int> wireframeLineIndicies;
+    std::vector<uint32_t> wireframeDisplayedEdges;
     std::vector<float> uv;
 
     Material material;

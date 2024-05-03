@@ -63,5 +63,6 @@ void main() {
     }
 
     fragColor = finalCol ;
+    //fragColor = vec4(float(texture(depthTex, texCoords).x)/3, 0,0,1);
 
 }

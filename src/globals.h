@@ -44,9 +44,9 @@ inline std::mt19937 rng;
 
 // -------------- SHADER & UNIFORM LOCATIONS -------------- //
 inline GLuint vertexShader_main, vertexShader_frameBufferWireframe;
-inline GLuint geometryShader_main, geometryShader_Flat, geometryShader_NormalDisplay, geometryShader_WireframeDisplay;
-inline GLuint fragmentShader_main,  fragmentShader_NormalDisplay, fragmentShader_WireframeDisplay, fragmentShader_frameBufferWireframe;
-inline GLuint shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay, shaderProgram_WireframeDisplay, shaderProgram_frameBufferWireframe;
+inline GLuint geometryShader_main, geometryShader_Flat, geometryShader_NormalDisplay, geometryShader_WireframeDisplay, geometryShader_BarycentricWireframe;
+inline GLuint fragmentShader_main,  fragmentShader_NormalDisplay, fragmentShader_WireframeDisplay, fragmentShader_frameBufferWireframe, fragmentShader_BarycentricWireframe;
+inline GLuint shaderProgram_main, shaderProgram_Flat, shaderProgram_NormalDisplay, shaderProgram_WireframeDisplay, shaderProgram_frameBufferWireframe, shaderProgram_BarycentricWireframe;
 
 // uniform for main shader
 inline GLuint projectionLoc, modelviewLoc, camPosLoc;
@@ -60,6 +60,9 @@ inline GLuint projectionLocNS, modelviewLocNS;
 // uniform for wireframe display shader
 inline GLuint projectionLocWS, modelviewLocWS, screenSizeLoc, wireframeWidthLocWS, wireframeColorLocWS;
 
+// uniform for barycentric wireframe shader
+inline GLuint projectionLocBWS, modelviewLocBWS, camPosLocBWS, screenSizeLocBWS, wireframeWidthLocBWS, wireframeColorLocBWS;
+
 inline GLuint normalDisplayLengthLoc;
 
 inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
@@ -68,7 +71,6 @@ inline GLuint lightsBufferID, lights_numberID, materialBufferID, objectNumberID;
 inline GLuint framebuffer;
 inline GLuint textureColorBuffer;
 inline GLuint depthBuffer;
-inline GLuint renderBuffer;
 
 inline GLuint wireframeColorLocFBS, wireframeWidthLocFBS;
 
@@ -101,7 +103,7 @@ inline std::vector<float> actual_render(window_height*window_width*3);
 inline int render_number = 0;
 inline bool displayNormals = false;
 inline float normalDisplayLength = 0.1f;
-inline int wireframeMode = 2;
+inline int wireframeMode = 1;
 inline float wireframeWidth = 0.001;
 inline glm::vec4 wireFrameColor = glm::vec4(0.2,0.8,1,1);
 inline glm::vec4 oldWireFrameColor = wireFrameColor;

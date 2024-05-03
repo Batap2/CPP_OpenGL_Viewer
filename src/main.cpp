@@ -200,11 +200,24 @@ void display() {
         glUniformMatrix4fv(modelviewLocFS, 1, GL_FALSE, &modelview[0][0]);
     }
 
-    if(wireframeMode == 2)
+    if(wireframeMode == 1)
     {
+        usedShader = shaderProgram_BarycentricWireframe;
+        glUseProgram(usedShader);
+        glUniform3fv(camPosLocBWS, 1, glm::value_ptr(mainCamera.cameraPos));
+        glUniformMatrix4fv(projectionLocBWS, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLocBWS, 1, GL_FALSE, &modelview[0][0]);
+
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    }
+
+    if(wireframeMode == 2)
+    {
+        glUseProgram(shaderProgram_WireframeDisplay);
+        glUniformMatrix4fv(projectionLocWS, 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(modelviewLocWS, 1, GL_FALSE, &modelview[0][0]);
     }
 
 
@@ -213,13 +226,6 @@ void display() {
         glUseProgram(shaderProgram_NormalDisplay);
         glUniformMatrix4fv(projectionLocNS, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLocNS, 1, GL_FALSE, &modelview[0][0]);
-    }
-
-    if(wireframeMode)
-    {
-        glUseProgram(shaderProgram_WireframeDisplay);
-        glUniformMatrix4fv(projectionLocWS, 1, GL_FALSE, &projection[0][0]);
-        glUniformMatrix4fv(modelviewLocWS, 1, GL_FALSE, &modelview[0][0]);
     }
 
     for(Mesh* meshP : scene_meshes)
@@ -249,7 +255,7 @@ void display() {
 
     }
 
-    if(wireframeMode ==2)
+    if(wireframeMode == 1)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glUseProgram(shaderProgram_frameBufferWireframe);
@@ -267,16 +273,16 @@ void display() {
         glEnable(GL_STENCIL_TEST);
     }
 
-    if(wireframeMode)
-    {
-        glDisable(GL_DEPTH_TEST);
-        for(Mesh* meshP : scene_meshes) {
-            glBindVertexArray(meshP->VAO_wireframe);
-            glUseProgram(shaderProgram_WireframeDisplay);
-            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
-        }
-        glEnable(GL_DEPTH_TEST);
-    }
+//    if(wireframeMode == 1)
+//    {
+//        glDisable(GL_DEPTH_TEST);
+//        glUseProgram(shaderProgram_WireframeDisplay);
+//        for(Mesh* meshP : scene_meshes) {
+//            glBindVertexArray(meshP->VAO_wireframe);
+//            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
+//        }
+//        glEnable(GL_DEPTH_TEST);
+//    }
 
 
 }
@@ -306,6 +312,8 @@ int main(int argc, char* argv[]){
     ShaderUtils::init_shaders();
 
     glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_LESS);
+
 
     glEnable(GL_STENCIL_TEST);
     glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);

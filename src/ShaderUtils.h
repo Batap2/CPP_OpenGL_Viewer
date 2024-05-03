@@ -116,17 +116,21 @@ namespace ShaderUtils{
         geometryShader_Flat = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_Flat.glsl");
         geometryShader_NormalDisplay = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_NormalDisplay.glsl");
         geometryShader_WireframeDisplay = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_WireframeDisplay.glsl");
+        geometryShader_BarycentricWireframe = shader.init_shaders(GL_GEOMETRY_SHADER, "../res/shaders/geometry_BarycentricWireframe.glsl");
 
         fragmentShader_main = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_main.glsl");
         fragmentShader_NormalDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_NormalDisplay.glsl");
         fragmentShader_WireframeDisplay = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_WireframeDisplay.glsl") ;
         fragmentShader_frameBufferWireframe = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_FrameBufferWireframe.glsl");
+        fragmentShader_BarycentricWireframe = shader.init_shaders(GL_FRAGMENT_SHADER, "../res/shaders/fragment_BarycentricWireframe.glsl");
+
 
         shaderProgram_main = shader.init_program(vertexShader_main, geometryShader_main, fragmentShader_main) ;
         shaderProgram_Flat = shader.init_program(vertexShader_main, geometryShader_Flat, fragmentShader_main);
         shaderProgram_NormalDisplay = shader.init_program(vertexShader_main, geometryShader_NormalDisplay, fragmentShader_NormalDisplay);
         shaderProgram_WireframeDisplay = shader.init_program(vertexShader_main, geometryShader_WireframeDisplay, fragmentShader_WireframeDisplay);
         shaderProgram_frameBufferWireframe = shader.init_program(vertexShader_frameBufferWireframe, fragmentShader_frameBufferWireframe);
+        shaderProgram_BarycentricWireframe = shader.init_program(vertexShader_main, geometryShader_BarycentricWireframe, fragmentShader_BarycentricWireframe);
 
 
         projectionLoc = glGetUniformLocation(shaderProgram_main, "projection");
@@ -140,15 +144,31 @@ namespace ShaderUtils{
         projectionLocNS = glGetUniformLocation(shaderProgram_NormalDisplay, "projection");
         modelviewLocNS = glGetUniformLocation(shaderProgram_NormalDisplay, "modelview");
 
+        glUseProgram(shaderProgram_WireframeDisplay);
+
         projectionLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "projection");
         modelviewLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "modelview");
         screenSizeLoc = glGetUniformLocation(shaderProgram_WireframeDisplay, "screenSize");
         wireframeWidthLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "wireframeWidth");
         wireframeColorLocWS = glGetUniformLocation(shaderProgram_WireframeDisplay, "wireframeColor");
-        glUseProgram(shaderProgram_WireframeDisplay);
+
         glUniform2f(screenSizeLoc, (float)window_width, (float)window_height);
         glUniform1f(wireframeWidthLocWS, wireframeWidth);
         glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
+
+
+        glUseProgram(shaderProgram_BarycentricWireframe);
+
+        projectionLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "projection");
+        modelviewLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "modelview");
+        camPosLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "camPos");
+        screenSizeLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "screenSize");
+        wireframeWidthLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "wireframeWidth");
+        wireframeColorLocBWS = glGetUniformLocation(shaderProgram_BarycentricWireframe, "wireframeColor");
+
+        glUniform2f(screenSizeLocBWS, (float)window_width, (float)window_height);
+        glUniform1f(wireframeWidthLocBWS, wireframeWidth);
+        glUniform4fv(wireframeColorLocBWS, 1, &wireFrameColor[0]);
 
 
         glUseProgram(shaderProgram_NormalDisplay);
@@ -257,6 +277,10 @@ namespace ShaderUtils{
         glUseProgram(shaderProgram_main);
         glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
         glUniform1i(lights_numberID, scene_lights.size());
+
+        glUseProgram(shaderProgram_BarycentricWireframe);
+        glUniform1fv(lightsBufferID, lightsMaxNumber * structSize, lightsBuffer);
+        glUniform1i(lights_numberID, scene_lights.size());
     }
 
     void sendMaterialsToShader()
@@ -305,6 +329,10 @@ namespace ShaderUtils{
         glUniform1i(objectNumberID, scene_meshes.size());
 
         glUseProgram(shaderProgram_main);
+        glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
+        glUniform1i(objectNumberID, scene_meshes.size());
+
+        glUseProgram(shaderProgram_BarycentricWireframe);
         glUniform1fv(materialBufferID, objectMaxNumber * structSize, materialBuffer);
         glUniform1i(objectNumberID, scene_meshes.size());
     }

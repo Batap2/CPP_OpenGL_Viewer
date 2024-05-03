@@ -72,7 +72,7 @@ void Mesh::openglInit()
     // ----------------- TEXTURES ---------------- //
 
     diffuse_texture_LOC = glGetUniformLocation(shaderProgram_main, "diffuse_texture");
-    float_texture_LOC = glGetUniformLocation(shaderProgram_main, "float_texture");
+    float_texture_LOC = glGetUniformLocation(shaderProgram_BarycentricWireframe, "float_texture");
 
     glUseProgram(shaderProgram_Flat);
     glUniform1i(diffuse_texture_LOC, 0);
@@ -81,6 +81,9 @@ void Mesh::openglInit()
     glUseProgram(shaderProgram_main);
     glUniform1i(diffuse_texture_LOC, 0);
     glUniform1i(float_texture_LOC,  1);
+
+    glUseProgram(shaderProgram_BarycentricWireframe);
+    glUniform1i(diffuse_texture_LOC, 0);
 
     glGenTextures(1, &diffuse_texture_id);
     glActiveTexture(GL_TEXTURE0 + 0);
@@ -289,6 +292,17 @@ void Mesh::createWireframeIndicies()
 {
     std::vector<Edge> edges;
     std::unordered_map<Edge, unsigned int[2], EdgeHash, EdgeEqual> edgeFaceAdjacency;
+    std::vector<bool> displayedEdge;
+
+
+    auto boolArrayToUIntLambda = [](bool boolArray[], int size) {
+        unsigned int result = 0;
+        for (int i = 0; i < size; ++i) {
+            result |= (boolArray[i] ? 1 : 0) << i;
+        }
+        return result;
+    };
+
 
     for (int i = 0; i < indices.size() / 3; ++i) {
         for (int e = 0; e < 3; ++e) {

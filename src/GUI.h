@@ -89,6 +89,8 @@ namespace GUI{
             glUniform1f(wireframeWidthLocWS, wireframeWidth);
             glUseProgram(shaderProgram_frameBufferWireframe);
             glUniform1f(wireframeWidthLocFBS, wireframeWidth);
+            glUseProgram(shaderProgram_BarycentricWireframe);
+            glUniform1f(wireframeWidthLocBWS, wireframeWidth);
         }
 
 
@@ -100,6 +102,8 @@ namespace GUI{
                 glUniform4fv(wireframeColorLocWS, 1, &wireFrameColor[0]);
                 glUseProgram(shaderProgram_frameBufferWireframe);
                 glUniform4fv(wireframeColorLocFBS, 1, &wireFrameColor[0]);
+                glUseProgram(shaderProgram_BarycentricWireframe);
+                glUniform4fv(wireframeColorLocBWS, 1, &wireFrameColor[0]);
 
                 oldWireFrameColor = wireFrameColor;
             }
