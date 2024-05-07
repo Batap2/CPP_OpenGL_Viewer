@@ -55,6 +55,7 @@ public:
     GLuint VAO, VBO, EBO, NBO, UVBO, diffuse_texture_id, float_texture_id, VAO_wireframe, VBO_wireframe, EBO_wireframe;
     GLuint ambiant_bo, diffuse_bo, specular_bo, mra_bo, useTexture_bo;
     GLuint diffuse_texture_LOC, float_texture_LOC;
+    GLuint edgeTexture_id, edgeTexture_LOC;
     std::string object_path, name;
 
     bool visible = true;
@@ -65,7 +66,7 @@ public:
     std::vector<Tri> triangle_indicies;
     std::vector <unsigned int> indices;
     std::vector <unsigned int> wireframeLineIndicies;
-    std::vector<uint32_t> wireframeDisplayedEdges;
+    std::vector<uint32_t> displayedEdges_fragmentWireframe;
     std::vector<float> uv;
 
     Material material;

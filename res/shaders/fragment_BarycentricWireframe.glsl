@@ -32,6 +32,7 @@ uniform float lights[LIGHTS_MAX_SIZE * lightStructSize];
 
 
 uniform sampler2D diffuse_texture;
+uniform usampler1D displayedEdges;
 
 uniform vec4 wireframeColor;
 uniform float wireframeWidth;
@@ -109,6 +110,9 @@ vec3 phong(vec3 lightPos, vec3 viewPos, vec3 normal, vec3 lightColor, vec3 objec
 
 void main (void){
 
+    // rajouter le nombre de tri ou le nombre de uint dans le premier uint de la texture
+    uint edge1 =
+
 
     float nearD = min(min(distFromEdge[0],distFromEdge[1]),distFromEdge[2]);
     float edgeIntensity = step(0.2, (1/(nearD)*wireframeWidth)*500);
@@ -183,6 +187,6 @@ void main (void){
 
     finalColor = mix(finalColor, wireframeColor.xyz, edgeIntensity);
 
-    fragColor = vec4(float(gl_PrimitiveID)/1000,0,0, 1.0f);
+    fragColor = vec4(finalColor,1);
 
 }

@@ -235,13 +235,17 @@ void display() {
         glStencilFunc(GL_ALWAYS, meshCount, 0xFF);
 
         glBindVertexArray(meshP->VAO);
-        if(meshP->material.useTexture){
-            glActiveTexture(GL_TEXTURE0 + 0);
-            glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
-        }
 
         if(meshP->visible)
+        {
+            glActiveTexture(GL_TEXTURE0 + 0);
+            glBindTexture(GL_TEXTURE_2D, meshP->diffuse_texture_id);
+
+            glActiveTexture(GL_TEXTURE0 + 1);
+            glBindTexture(GL_TEXTURE_1D, meshP->edgeTexture_id);
+
             glDrawElements(GL_TRIANGLES, meshP->indices.size(), GL_UNSIGNED_INT, 0);
+        }
 
         if(displayNormals)
         {
@@ -335,14 +339,14 @@ int main(int argc, char* argv[]){
     SceneOperations::initSceneLights();
 //    SceneOperations::openFile("../data/bunny.obj");
 //
-    SceneOperations::openFile("../data/doon.obj");
+    //SceneOperations::openFile("../data/doon.obj");
 //    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
 //    scene_objects[0]->applyTransform();
 
-    scene_objects[0]->rotate(vec3(0,1,1), 0.1);
+    //scene_objects[0]->rotate(vec3(0,1,1), 0.1);
     //SceneOperations::openFile("../data/tri.obj");
 
-    SceneOperations::openFile("../data/tubePlane.obj");
+    SceneOperations::openFile("../data/2tri.obj");
 
     SceneOperations::init_flat_screen();
 

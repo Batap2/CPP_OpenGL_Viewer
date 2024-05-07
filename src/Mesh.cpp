@@ -146,6 +146,31 @@ void Mesh::openglInit()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_wireframe);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * wireframeLineIndicies.size(), wireframeLineIndicies.data(), GL_STATIC_DRAW);
+
+    // ------------------------ WireFrame texture, for fragment opaque wireframe shader -------------------------
+
+    edgeTexture_LOC = glGetUniformLocation(shaderProgram_BarycentricWireframe, "displayedEdges");
+    glUseProgram(shaderProgram_BarycentricWireframe);
+    glUniform1i(edgeTexture_LOC, 1);
+
+    glGenTextures(1, &edgeTexture_id);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_1D, edgeTexture_id);
+
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage1D(GL_TEXTURE_1D,
+                 0,
+                 GL_R32UI,
+                 displayedEdges_fragmentWireframe.size(),
+                 0,
+                 GL_RED_INTEGER,
+                 GL_UNSIGNED_INT,
+                 displayedEdges_fragmentWireframe.data()
+    );
 }
 
 void Mesh::change_texture(FloatTexture tex)
@@ -291,18 +316,38 @@ void Mesh::applyTransform(glm::mat4 transform)
 void Mesh::createWireframeIndicies()
 {
     std::vector<Edge> edges;
-    std::unordered_map<Edge, unsigned int[2], EdgeHash, EdgeEqual> edgeFaceAdjacency;
-    std::vector<bool> displayedEdge;
+    std::unordered_map<Edge, long[4], EdgeHash, EdgeEqual> edgeFaceAdjacency;
+    std::vector<bool> displayedEdges_boolArray;
+    displayedEdges_boolArray.resize(indices.size());
 
+    auto boolsToUintArray = [&](std::vector<bool> bools, std::vector<uint32_t> uintArr) {
+        unsigned int finalArraySize = ceil((float)bools.size()/32.0f);
+        unsigned int offset = 0;
 
-    auto boolArrayToUIntLambda = [](bool boolArray[], int size) {
-        unsigned int result = 0;
-        for (int i = 0; i < size; ++i) {
-            result |= (boolArray[i] ? 1 : 0) << i;
+        for (int i = 0; i < finalArraySize; ++i) {
+            std::vector<bool> bool32(32);
+
+            if(offset +32 > bools.size())
+            {
+                for(int j = offset; j < bools.size(); ++j)
+                {
+                    bool32[j] = bools[j];
+                }
+            } else
+            {
+                bool32 = std::vector<bool>(bools.begin() + offset, bools.begin() + offset + 32);
+            }
+
+            uint32_t packed = 0;
+            for (int j = 0; j < 32; ++j) {
+                packed |= (bool32[j] ? 1 : 0) << j;
+            }
+
+            uintArr.push_back(packed);
+
+            offset += 32;
         }
-        return result;
     };
-
 
     for (int i = 0; i < indices.size() / 3; ++i) {
         for (int e = 0; e < 3; ++e) {
@@ -313,8 +358,10 @@ void Mesh::createWireframeIndicies()
             if (edgeFaceAdjacency.find(edge) == edgeFaceAdjacency.end()) {
                 edgeFaceAdjacency[edge][0] = i*3;
                 edgeFaceAdjacency[edge][1] = -1;
+                edgeFaceAdjacency[edge][2] = e;
             } else {
                 edgeFaceAdjacency[edge][1] = i*3;
+                edgeFaceAdjacency[edge][3] = e;
             }
         }
     }
@@ -351,11 +398,13 @@ void Mesh::createWireframeIndicies()
 
         if(angle > 0.77){
             edges.push_back(edge.first);
+            displayedEdges_boolArray[tri1 + edge.second[2]] = true;
+            displayedEdges_boolArray[tri2 + edge.second[3]] = true;
         }
 
     }
 
-
+    boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
 
     for (auto &edge : edges){
         wireframeLineIndicies.push_back(edge.first);
