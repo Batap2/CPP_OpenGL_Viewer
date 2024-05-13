@@ -106,26 +106,26 @@ void Mesh::openglInit()
     );
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    glGenTextures(1, &float_texture_id);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, float_texture_id);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGB,
-                 material.float_texture.width,
-                 material.float_texture.height,
-                 0,
-                 GL_RGB,
-                 GL_FLOAT,
-                 gpuOutputImg.data()
-    );
-    glGenerateMipmap(GL_TEXTURE_2D);
+//    glGenTextures(1, &float_texture_id);
+//    glActiveTexture(GL_TEXTURE0 + 1);
+//    glBindTexture(GL_TEXTURE_2D, float_texture_id);
+//
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//
+//    glTexImage2D(GL_TEXTURE_2D,
+//                 0,
+//                 GL_RGB,
+//                 material.float_texture.width,
+//                 material.float_texture.height,
+//                 0,
+//                 GL_RGB,
+//                 GL_FLOAT,
+//                 gpuOutputImg.data()
+//    );
+//    glGenerateMipmap(GL_TEXTURE_2D);
 
     // ------------------------ WireFrame VAO -------------------------
 
@@ -320,32 +320,32 @@ void Mesh::createWireframeIndicies()
     std::vector<bool> displayedEdges_boolArray;
     displayedEdges_boolArray.resize(indices.size());
 
-    auto boolsToUintArray = [&](std::vector<bool> bools, std::vector<uint32_t> uintArr) {
-        unsigned int finalArraySize = ceil((float)bools.size()/32.0f);
+    auto boolsToUintArray = [&](std::vector<bool> &bools, std::vector<uint32_t> & uintArr) {
+        unsigned int finalArraySize = ceil((float)bools.size()/30.0f);
         unsigned int offset = 0;
 
         for (int i = 0; i < finalArraySize; ++i) {
-            std::vector<bool> bool32(32);
+            std::vector<bool> bool30(30);
 
-            if(offset +32 > bools.size())
+            if(offset +30 > bools.size())
             {
                 for(int j = offset; j < bools.size(); ++j)
                 {
-                    bool32[j] = bools[j];
+                    bool30[j] = bools[j];
                 }
             } else
             {
-                bool32 = std::vector<bool>(bools.begin() + offset, bools.begin() + offset + 32);
+                bool30 = std::vector<bool>(bools.begin() + offset, bools.begin() + offset + 30);
             }
 
             uint32_t packed = 0;
-            for (int j = 0; j < 32; ++j) {
-                packed |= (bool32[j] ? 1 : 0) << j;
+            for (int j = 0; j < 30; ++j) {
+                packed |= (bool30[j] ? 1 : 0) << j;
             }
 
             uintArr.push_back(packed);
 
-            offset += 32;
+            offset += 30;
         }
     };
 
@@ -404,7 +404,16 @@ void Mesh::createWireframeIndicies()
 
     }
 
-    boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
+    //boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
+    for(auto a : displayedEdges_boolArray){
+        if(a){
+            displayedEdges_fragmentWireframe.push_back(1);
+        } else {
+            displayedEdges_fragmentWireframe.push_back(0);
+        }
+    }
+
+    displayedEdges_fragmentWireframe.insert(displayedEdges_fragmentWireframe.begin(), displayedEdges_fragmentWireframe.size());
 
     for (auto &edge : edges){
         wireframeLineIndicies.push_back(edge.first);
