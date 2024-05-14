@@ -181,55 +181,57 @@ vec3 computeColor()
     return finalColor;
 }
 
-void main (void){
+void main (void) {
 
     uint byteNumber = texture(displayedEdges, 0).x;
-//
-//    float bytePos = float(gl_PrimitiveID + 10)/10.0f / (float(byteNumber)+1.0f);
-//    bytePos = 0.6f;
-//
-//    uint selectedByte = texture(displayedEdges, bytePos).x;
-//
-//    uint triPosInByte = uint(mod(gl_PrimitiveID,11)*3);
-//
-//    uint e1Mask = uint(1) << (triPosInByte + uint(0));
-//    uint e2Mask = uint(1) << (triPosInByte + uint(1));
-//    uint e3Mask = uint(1) << (triPosInByte + uint(2));
-//
-//    uint e1 = e1Mask & selectedByte;
-//    uint e2 = e2Mask & selectedByte;
-//    uint e3 = e2Mask & selectedByte;
+    float byteOffset = (1.0f / (float(byteNumber) + 1.0f)) * 0.5;
 
-    float byteOffset = (1.0f/(float(byteNumber)+1.0f)) * 0.5;
+    // ----------------- 10 faces par byte
 
-    float triPos1 = float(gl_PrimitiveID*3 +1)/ (float(byteNumber)+1) + byteOffset;
-    float triPos2 = float(gl_PrimitiveID*3 +2)/ (float(byteNumber)+1) + byteOffset;
-    float triPos3 = float(gl_PrimitiveID*3 +3)/ (float(byteNumber)+1) + byteOffset;
+    float bytePos = floor(float(gl_PrimitiveID + 10) / 10.0f) / (float(byteNumber) + 1.0f) + byteOffset;
 
+    uint selectedByte = texture(displayedEdges, bytePos).x;
 
-    uint e1 = texture(displayedEdges, triPos1).x;
-    uint e2 = texture(displayedEdges, triPos2).x;
-    uint e3 = texture(displayedEdges, triPos3).x;
+    uint triPosInByte = uint(mod(gl_PrimitiveID, 10) * 3);
+
+    uint e1Mask = uint(1) << (triPosInByte + uint(0));
+    uint e2Mask = uint(1) << (triPosInByte + uint(1));
+    uint e3Mask = uint(1) << (triPosInByte + uint(2));
+
+    uint e1 = e1Mask & selectedByte;
+    uint e2 = e2Mask & selectedByte;
+    uint e3 = e3Mask & selectedByte;
+
+    // ------------------ 1 byte par edge
+    
+    //    float triPos1 = float(gl_PrimitiveID*3 +1)/ (float(byteNumber)+1) + byteOffset;
+    //    float triPos2 = float(gl_PrimitiveID*3 +2)/ (float(byteNumber)+1) + byteOffset;
+    //    float triPos3 = float(gl_PrimitiveID*3 +3)/ (float(byteNumber)+1) + byteOffset;
+    //
+    //
+    //    uint e1 = texture(displayedEdges, triPos1).x;
+    //    uint e2 = texture(displayedEdges, triPos2).x;
+    //    uint e3 = texture(displayedEdges, triPos3).x;
 
     float nearD;
 
-    if(bool(e1) && bool(e2) && bool(e3)){
-        nearD = min(min(distFromEdge[0],distFromEdge[1]),distFromEdge[2]);
+    if (bool(e1) && bool(e2) && bool(e3)) {
+        nearD = min(min(distFromEdge[0], distFromEdge[1]), distFromEdge[2]);
     }
-    else if( bool(e1) && bool(e2) ){
-        nearD = min(distFromEdge[2],distFromEdge[0]);
+    else if (bool(e1) && bool(e2)) {
+        nearD = min(distFromEdge[2], distFromEdge[0]);
     }
-    else if( bool(e1) && bool(e3) ){
-        nearD = min(distFromEdge[2],distFromEdge[1]);
+    else if (bool(e1) && bool(e3)) {
+        nearD = min(distFromEdge[2], distFromEdge[1]);
     }
-    else if( bool(e2) && bool(e3) ){
-        nearD = min(distFromEdge[0],distFromEdge[1]);
+    else if (bool(e2) && bool(e3)) {
+        nearD = min(distFromEdge[0], distFromEdge[1]);
     }
-    else if(bool(e1))
+    else if (bool(e1))
     {
         nearD = distFromEdge[2];
     }
-    else if (bool(e2)){
+    else if (bool(e2)) {
         nearD = distFromEdge[0];
     }
     else if (bool(e3)) {
@@ -238,23 +240,16 @@ void main (void){
 
 
 
-    float edgeIntensity = step(0.2, (1/(nearD)*wireframeWidth)*500);
+    float edgeIntensity = step(0.2, (1 / (nearD) * wireframeWidth) * 500);
 
 
     vec3 finalColor = computeColor();
 
 
 
-    if(bool(e1|e2|e3)){
+    if (bool(e1 | e2 | e3)) {
         finalColor = mix(finalColor, wireframeColor.xyz, edgeIntensity);
     }
 
-    fragColor = vec4(finalColor,1);
-
-//    if(bool(e3)){
-//        fragColor = vec4(1,0,0,1);
-//    } else{
-//        fragColor = vec4(finalColor,1);
-//    }
-
+    fragColor = vec4(finalColor, 1);
 }

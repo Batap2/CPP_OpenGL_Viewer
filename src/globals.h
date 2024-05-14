@@ -21,7 +21,7 @@ inline vec3 eye;
 inline vec3 up;
 
 
-inline vec3 eyeinit(-2, 0, -2);
+inline vec3 eyeinit(-4, 0, 0);
 inline vec3 upinit(0.0, 1.0, 0.0);
 inline vec3 center(0.0, 0.0, 0.0);
 inline int mouse_mode    = 1;

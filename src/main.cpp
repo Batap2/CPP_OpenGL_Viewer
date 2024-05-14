@@ -208,9 +208,9 @@ void display() {
         glUniformMatrix4fv(projectionLocBWS, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLocBWS, 1, GL_FALSE, &modelview[0][0]);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+//        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+//        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     if(wireframeMode == 2)
@@ -250,32 +250,34 @@ void display() {
         if(displayNormals)
         {
             glDisable(GL_DEPTH_TEST);
+            glDisable(GL_STENCIL_TEST);
             glUseProgram(shaderProgram_NormalDisplay);
             glDrawElements(GL_TRIANGLES, meshP->indices.size(), GL_UNSIGNED_INT, 0);
             glEnable(GL_DEPTH_TEST);
+            glEnable(GL_STENCIL_TEST);
         }
 
-        meshCount++;
+        meshCount = (meshCount % 256) + 1;
 
     }
 
-    if(wireframeMode == 1)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glUseProgram(shaderProgram_frameBufferWireframe);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthBuffer);
-
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_STENCIL_TEST);
-        glBindVertexArray(frameBufferQuadVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_STENCIL_TEST);
-    }
+//    if(wireframeMode == 1)
+//    {
+//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//        glUseProgram(shaderProgram_frameBufferWireframe);
+//
+//        glActiveTexture(GL_TEXTURE0);
+//        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+//        glActiveTexture(GL_TEXTURE1);
+//        glBindTexture(GL_TEXTURE_2D, depthBuffer);
+//
+//        glDisable(GL_DEPTH_TEST);
+//        glDisable(GL_STENCIL_TEST);
+//        glBindVertexArray(frameBufferQuadVAO);
+//        glDrawArrays(GL_TRIANGLES, 0, 6);
+//        glEnable(GL_DEPTH_TEST);
+//        glEnable(GL_STENCIL_TEST);
+//    }
 
 //    if(wireframeMode == 1)
 //    {
@@ -300,7 +302,8 @@ int main(int argc, char* argv[]){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     window = glfwCreateWindow(window_width, window_height, "Scene Viewer", NULL, NULL);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    // 1800 fps
+    glfwSwapInterval(0);
 
     if (glewInit() != GLEW_OK) std::cout << "ERROR : glewInit\n ";
     std::cout << glGetString(GL_VERSION) << "\n";
@@ -346,7 +349,7 @@ int main(int argc, char* argv[]){
     //scene_objects[0]->rotate(vec3(0,1,1), 0.1);
     //SceneOperations::openFile("../data/tri.obj");
 
-    SceneOperations::openFile("../data/2tri.obj");
+    SceneOperations::openFile("../data/testWireframe3.obj");
 
     SceneOperations::init_flat_screen();
 

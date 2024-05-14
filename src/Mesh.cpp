@@ -329,9 +329,11 @@ void Mesh::createWireframeIndicies()
 
             if(offset +30 > bools.size())
             {
+                int ii = 0;
                 for(int j = offset; j < bools.size(); ++j)
                 {
-                    bool30[j] = bools[j];
+                    bool30[ii] = bools[j];
+                    ii++;
                 }
             } else
             {
@@ -404,15 +406,7 @@ void Mesh::createWireframeIndicies()
 
     }
 
-    //boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
-    for(auto a : displayedEdges_boolArray){
-        if(a){
-            displayedEdges_fragmentWireframe.push_back(1);
-        } else {
-            displayedEdges_fragmentWireframe.push_back(0);
-        }
-    }
-
+    boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
     displayedEdges_fragmentWireframe.insert(displayedEdges_fragmentWireframe.begin(), displayedEdges_fragmentWireframe.size());
 
     for (auto &edge : edges){
