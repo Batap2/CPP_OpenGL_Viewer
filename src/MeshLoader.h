@@ -58,6 +58,8 @@ namespace MeshLoader{
             unsigned int sizeT = aiMesh->mNumFaces;
 
             newMesh->vertices.resize (sizeV);
+            newMesh->verticesT.resize(sizeV);
+            newMesh->normalsT.resize(sizeV);
             newMesh->triangle_indicies.resize (sizeT);
             newMesh->indices.resize (sizeT * 3);
             newMesh->normals.resize(sizeV);
@@ -247,6 +249,7 @@ namespace MeshLoader{
             //}
 
             // ----------------------------------------- //
+
 
             newMesh->openglInit();
             scene_meshes.push_back(newMesh);

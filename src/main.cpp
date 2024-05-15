@@ -84,6 +84,10 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             case GLFW_KEY_P:
                 flat_screen.change_texture(FloatTexture());
                 break;
+            case GLFW_KEY_O:
+                scene_objects[0]->translate(vec3(1,0,0));
+                scene_objects[0]->applyTransform();
+                break;
         }
     } else if (action == GLFW_RELEASE)
     {
@@ -200,7 +204,7 @@ void display() {
         glUniformMatrix4fv(modelviewLocFS, 1, GL_FALSE, &modelview[0][0]);
     }
 
-    if(wireframeMode == 1)
+    if(wireframeMode)
     {
         usedShader = shaderProgram_BarycentricWireframe;
         glUseProgram(usedShader);
@@ -208,9 +212,9 @@ void display() {
         glUniformMatrix4fv(projectionLocBWS, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLocBWS, 1, GL_FALSE, &modelview[0][0]);
 
-//        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-//        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     if(wireframeMode == 2)
@@ -228,8 +232,7 @@ void display() {
         glUniformMatrix4fv(modelviewLocNS, 1, GL_FALSE, &modelview[0][0]);
     }
 
-    for(Mesh* meshP : scene_meshes)
-    {
+    auto renderMesh = [&](Mesh* meshP){
         glUseProgram(usedShader);
 
         glStencilFunc(GL_ALWAYS, meshCount, 0xFF);
@@ -258,37 +261,55 @@ void display() {
         }
 
         meshCount = (meshCount % 256) + 1;
+    };
 
+    if(wireframeMode == 2)
+    {
+        std::vector<Mesh*> orderedMeshes;
+
+        SceneOperations::orderMeshes(orderedMeshes);
+
+        for(Mesh* meshP : orderedMeshes)
+        {
+            renderMesh(meshP);
+        }
+
+    } else
+    {
+        for(Mesh* meshP : scene_meshes)
+        {
+            renderMesh(meshP);
+        }
     }
 
-//    if(wireframeMode == 1)
-//    {
-//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//        glUseProgram(shaderProgram_frameBufferWireframe);
-//
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
-//        glActiveTexture(GL_TEXTURE1);
-//        glBindTexture(GL_TEXTURE_2D, depthBuffer);
-//
-//        glDisable(GL_DEPTH_TEST);
-//        glDisable(GL_STENCIL_TEST);
-//        glBindVertexArray(frameBufferQuadVAO);
-//        glDrawArrays(GL_TRIANGLES, 0, 6);
-//        glEnable(GL_DEPTH_TEST);
-//        glEnable(GL_STENCIL_TEST);
-//    }
+    if(wireframeMode)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glUseProgram(shaderProgram_frameBufferWireframe);
 
-//    if(wireframeMode == 1)
-//    {
-//        glDisable(GL_DEPTH_TEST);
-//        glUseProgram(shaderProgram_WireframeDisplay);
-//        for(Mesh* meshP : scene_meshes) {
-//            glBindVertexArray(meshP->VAO_wireframe);
-//            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
-//        }
-//        glEnable(GL_DEPTH_TEST);
-//    }
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthBuffer);
+
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_STENCIL_TEST);
+        glBindVertexArray(frameBufferQuadVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+    }
+
+    if(wireframeMode == 2)
+    {
+        glDisable(GL_DEPTH_TEST);
+        glUseProgram(shaderProgram_WireframeDisplay);
+        for(Mesh* meshP : scene_meshes) {
+            glBindVertexArray(meshP->VAO_wireframe);
+            glDrawElements(GL_LINES, meshP->wireframeLineIndicies.size(), GL_UNSIGNED_INT, 0);
+        }
+        glEnable(GL_DEPTH_TEST);
+    }
 
 
 }
@@ -366,7 +387,6 @@ int main(int argc, char* argv[]){
         if(showMenus){
             GUI::draw(window);
         }
-
 
         scene_objects[0]->applyTransform();
 

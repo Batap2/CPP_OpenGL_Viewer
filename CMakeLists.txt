@@ -19,7 +19,7 @@ find_package(GLEW REQUIRED)
 add_subdirectory(include)
 
 # Ajouter les fichiers source
-file(GLOB source_files "${source_dir}/*.cpp" "include/imgui/*.cpp")
+file(GLOB source_files "${source_dir}/*.cpp" "include/imgui/*.cpp" "include/ImGuizmo/*.cpp")
 
 # Ajouter l'exécutable avec les fichiers source
 add_executable(Viewer ${source_files}

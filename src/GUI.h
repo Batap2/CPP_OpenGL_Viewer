@@ -11,6 +11,7 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui-filebrowser/imfilebrowser.h"
+#include "ImGuizmo/ImGuizmo.h"
 
 
 #include "ShaderUtils.h"
@@ -170,6 +171,10 @@ namespace GUI{
                 render_number = 0;
             }
 
+            if(ImGui::InputFloat3("Position", &scene_objects[selected_object]->position[0])){
+                scene_objects[selected_object]->updatePosition();
+                scene_objects[selected_object]->applyTransform();
+            }
 
             if(scene_meshes[selected_object]->material.isEmissive){
                 emissiveClick = true;
@@ -323,6 +328,66 @@ namespace GUI{
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
+
+        //TODO : enlever cette merde
+//        auto Frustum = [&](float left, float right, float bottom, float top, float znear, float zfar, float* m16)
+//        {
+//            float temp, temp2, temp3, temp4;
+//            temp = 2.0f * znear;
+//            temp2 = right - left;
+//            temp3 = top - bottom;
+//            temp4 = zfar - znear;
+//            m16[0] = temp / temp2;
+//            m16[1] = 0.0;
+//            m16[2] = 0.0;
+//            m16[3] = 0.0;
+//            m16[4] = 0.0;
+//            m16[5] = temp / temp3;
+//            m16[6] = 0.0;
+//            m16[7] = 0.0;
+//            m16[8] = (right + left) / temp2;
+//            m16[9] = (top + bottom) / temp3;
+//            m16[10] = (-zfar - znear) / temp4;
+//            m16[11] = -1.0f;
+//            m16[12] = 0.0;
+//            m16[13] = 0.0;
+//            m16[14] = (-temp * zfar) / temp4;
+//            m16[15] = 0.0;
+//        };
+//
+//        auto Perspective = [&](float fovyInDegrees, float aspectRatio, float znear, float zfar, float* m16)
+//        {
+//            float ymax, xmax;
+//            ymax = znear * tanf(fovyInDegrees * 3.141592f / 180.0f);
+//            xmax = ymax * aspectRatio;
+//            Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
+//        };
+//
+//        float aprojection[16];
+//
+//        float aobj[16] =
+//                {
+//                        1,0,0,0,
+//                        0,1,0,0,
+//                        0,0,1,0,
+//                        0,0,0,1
+//                };
+//
+//        float aview[16] =
+//                {
+//                1,0,0,0,
+//                0,1,0,0,
+//                0,0,1,0,
+//                0,0,0,1
+//                };
+//
+//        ImGuiIO& io = ImGui::GetIO();
+//        Perspective(27, io.DisplaySize.x / io.DisplaySize.y, 0.1f, 100.f, aprojection);
+//
+//        ImGuizmo::Enable(true);
+//        ImGuizmo::DrawCubes(aview, aprojection, aobj, 1);
+
 
         displayMainToolbar(window);
         fileDialog.Display();

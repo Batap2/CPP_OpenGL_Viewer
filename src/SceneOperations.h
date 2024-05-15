@@ -8,6 +8,16 @@
 #include "globals.h"
 #include "MeshLoader.h"
 
+#include <algorithm>
+
+struct MeshDistance{
+    Mesh* meshP;
+    float distance;
+
+    bool operator<(const MeshDistance& other) const {
+        return distance < other.distance;
+    }
+};
 
 namespace SceneOperations
 {
@@ -150,6 +160,24 @@ namespace SceneOperations
             newObj->mesh = m;
 
             scene_objects.push_back(newObj);
+        }
+    }
+
+    void orderMeshes(std::vector<Mesh*> &orderedMesh)
+    {
+        orderedMesh = std::vector<Mesh *>(scene_objects.size());
+        std::vector<MeshDistance> meshDistanceVec(scene_objects.size());
+
+        for(unsigned int i = 0; i < scene_objects.size(); ++i)
+        {
+            float dist = glm::length(mainCamera.cameraPos - scene_objects[i]->getPosition());
+            meshDistanceVec[i] = {scene_objects[i]->mesh, dist};
+        }
+
+        std::sort(meshDistanceVec.begin(), meshDistanceVec.end());
+
+        for(unsigned int i = 0; i < scene_objects.size(); ++i){
+            orderedMesh[i] = meshDistanceVec[i].meshP;
         }
     }
 }

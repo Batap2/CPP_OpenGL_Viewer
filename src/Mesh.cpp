@@ -289,28 +289,22 @@ void Mesh::updateMaterial(){
 
 void Mesh::applyTransform(glm::mat4 transform)
 {
-    for(auto& vert : vertices)
+    for(size_t i = 0; i < vertices.size(); ++i)
     {
-        vert = vec3(transform * glm::vec4(vert,1));
+        verticesT[i] = vec3(transform * glm::vec4(vertices[i],1));
+        normalsT[i] = glm::normalize(vec3(glm::inverse(glm::transpose(transform)) * glm::vec4(normals[i],1)));
     }
-
-    for(auto& norm : normals)
-    {
-        norm = vec3(glm::inverse(glm::transpose(transform)) * glm::vec4(norm,1));
-        glm::normalize(norm);
-    }
-
 
     // Bind VAO
     glBindVertexArray(VAO);
 
     // Bind VBO and copy vertex data
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * vertices.size(), vertices.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * verticesT.size(), verticesT.data());
 
     // Bind normals to layout location 1
     glBindBuffer(GL_ARRAY_BUFFER, NBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normals.size(), normals.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normalsT.size(), normalsT.data());
 }
 
 void Mesh::createWireframeIndicies()

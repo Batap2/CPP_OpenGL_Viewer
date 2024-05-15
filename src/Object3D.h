@@ -27,8 +27,12 @@ public:
 
     glm::mat4 transform = glm::mat4(1.0f);
 
+    glm::vec3 position;
+    glm::vec3 rotation;
+
     void applyTransform(){
         mesh->applyTransform(transform);
+        position = getPosition();
     }
 
     glm::vec3 getRotationEulerAngles()
@@ -42,9 +46,16 @@ public:
         return glm::mat3(transform);
     }
 
+    void updatePosition()
+    {
+        transform[3][0] = position.x;
+        transform[3][1] = position.y;
+        transform[3][2] = position.z;
+    }
+
     glm::vec3 getPosition()
     {
-        return glm::vec3 (0.0f);
+        return glm::vec3(transform[3][0], transform[3][1], transform[3][2]);
     }
 
     void rotate(glm::vec3 axis, float angle)

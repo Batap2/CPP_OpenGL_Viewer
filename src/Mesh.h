@@ -62,6 +62,8 @@ public:
 
     std::vector <glm::vec3> vertices;
     std::vector <glm::vec3> normals;
+    std::vector <glm::vec3> verticesT;
+    std::vector <glm::vec3> normalsT;
     std::vector <glm::vec3> selectedEdges;
     std::vector<Tri> triangle_indicies;
     std::vector <unsigned int> indices;
