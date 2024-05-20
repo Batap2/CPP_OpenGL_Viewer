@@ -204,17 +204,19 @@ void display() {
         glUniformMatrix4fv(modelviewLocFS, 1, GL_FALSE, &modelview[0][0]);
     }
 
-    if(wireframeMode)
+    if(wireframeMode){
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    }
+
+    if(wireframeMode == 1)
     {
         usedShader = shaderProgram_BarycentricWireframe;
         glUseProgram(usedShader);
         glUniform3fv(camPosLocBWS, 1, glm::value_ptr(mainCamera.cameraPos));
         glUniformMatrix4fv(projectionLocBWS, 1, GL_FALSE, &projection[0][0]);
         glUniformMatrix4fv(modelviewLocBWS, 1, GL_FALSE, &modelview[0][0]);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     if(wireframeMode == 2)
@@ -265,6 +267,7 @@ void display() {
 
     if(wireframeMode == 2)
     {
+
         std::vector<Mesh*> orderedMeshes;
 
         SceneOperations::orderMeshes(orderedMeshes);
@@ -274,6 +277,7 @@ void display() {
             renderMesh(meshP);
         }
 
+
     } else
     {
         for(Mesh* meshP : scene_meshes)
@@ -281,6 +285,7 @@ void display() {
             renderMesh(meshP);
         }
     }
+
 
     if(wireframeMode)
     {
@@ -361,16 +366,8 @@ int main(int argc, char* argv[]){
     mainCamera.updatePos(pitch, yaw);
 
     SceneOperations::initSceneLights();
-//    SceneOperations::openFile("../data/bunny.obj");
-//
-    //SceneOperations::openFile("../data/doon.obj");
-//    scene_objects[0]->translate(glm::vec3(0,0,-1.2));
-//    scene_objects[0]->applyTransform();
 
-    //scene_objects[0]->rotate(vec3(0,1,1), 0.1);
-    //SceneOperations::openFile("../data/tri.obj");
-
-    SceneOperations::openFile("../data/testWireframe3.obj");
+    //SceneOperations::openFile("../data/coopratings.obj");
 
     SceneOperations::init_flat_screen();
 
@@ -387,8 +384,6 @@ int main(int argc, char* argv[]){
         if(showMenus){
             GUI::draw(window);
         }
-
-        scene_objects[0]->applyTransform();
 
         glfwSwapBuffers(window);
     }

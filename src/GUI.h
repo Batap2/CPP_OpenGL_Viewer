@@ -171,7 +171,9 @@ namespace GUI{
                 render_number = 0;
             }
 
-            if(ImGui::InputFloat3("Position", &scene_objects[selected_object]->position[0])){
+
+            if(ImGui::DragFloat3("Position", &scene_objects[selected_object]->position[0]), 0.01f){
+                //TODO : fix ça, j'ai la flemme pour l'instant
                 scene_objects[selected_object]->updatePosition();
                 scene_objects[selected_object]->applyTransform();
             }

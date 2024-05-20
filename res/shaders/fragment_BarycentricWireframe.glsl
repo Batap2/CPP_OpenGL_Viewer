@@ -203,7 +203,7 @@ void main (void) {
     uint e3 = e3Mask & selectedByte;
 
     // ------------------ 1 byte par edge
-    
+
     //    float triPos1 = float(gl_PrimitiveID*3 +1)/ (float(byteNumber)+1) + byteOffset;
     //    float triPos2 = float(gl_PrimitiveID*3 +2)/ (float(byteNumber)+1) + byteOffset;
     //    float triPos3 = float(gl_PrimitiveID*3 +3)/ (float(byteNumber)+1) + byteOffset;

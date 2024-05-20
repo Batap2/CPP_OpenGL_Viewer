@@ -64,7 +64,6 @@ public:
     std::vector <glm::vec3> normals;
     std::vector <glm::vec3> verticesT;
     std::vector <glm::vec3> normalsT;
-    std::vector <glm::vec3> selectedEdges;
     std::vector<Tri> triangle_indicies;
     std::vector <unsigned int> indices;
     std::vector <unsigned int> wireframeLineIndicies;
@@ -75,6 +74,8 @@ public:
 
     glm::vec3 bbmin;
     glm::vec3 bbmax;
+
+    ~Mesh();
 
     void applyTransform(glm::mat4 transform);
 

@@ -21,18 +21,22 @@ class Object3D
 public:
     Object3D(){
     }
-    ~Object3D();
+    ~Object3D(){
+        delete mesh;
+    };
 
     Mesh* mesh;
 
+    unsigned int meshIndex;
+
     glm::mat4 transform = glm::mat4(1.0f);
 
-    glm::vec3 position;
+    glm::vec3 position = {0.0f,0.0f,0.0f};
     glm::vec3 rotation;
 
-    void applyTransform(){
+    void applyTransform()
+    {
         mesh->applyTransform(transform);
-        position = getPosition();
     }
 
     glm::vec3 getRotationEulerAngles()

@@ -18,9 +18,18 @@
 #include "stb_image.h"
 #include "globals.h"
 
+struct MeshPtr_Index
+{
+    Mesh* meshP;
+    size_t index;
+};
+
 namespace MeshLoader{
 
-    bool import(const std::string & pFile) {
+    std::vector<MeshPtr_Index> import(const std::string & pFile)
+    {
+        std::vector<MeshPtr_Index> meshVec;
+
         // Create an instance of the Importer class
         Assimp::Importer importer;
 
@@ -39,7 +48,7 @@ namespace MeshLoader{
         // If the import failed, report it
         if (nullptr == aiScene) {
             std::cout << "Mesh file not found or cannot be imported" << std::endl;
-            return false;
+            return {};
         }
 
         int meshNumber = aiScene->mNumMeshes;
@@ -48,6 +57,8 @@ namespace MeshLoader{
         for(int i = 0; i < meshNumber; ++i)
         {
             auto* newMesh = new Mesh();
+            auto* newObj = new Object3D();
+            newObj->mesh = newMesh;
             Material mat;
             newMesh->material = mat;
 
@@ -115,6 +126,8 @@ namespace MeshLoader{
             }
             newMesh->bbmin = bbmin;
             newMesh->bbmax = bbmax;
+
+            auto a = aiScene->mRootNode->mChildren[0];
 
             // --------------- TEXTURE ---------------- //
 
@@ -250,12 +263,13 @@ namespace MeshLoader{
 
             // ----------------------------------------- //
 
+            meshVec.push_back({newMesh, scene_meshes.size()});
 
             newMesh->openglInit();
             scene_meshes.push_back(newMesh);
         }
 
-        return true;
+        return meshVec;
     }
 }
 

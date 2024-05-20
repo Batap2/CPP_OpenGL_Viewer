@@ -134,17 +134,21 @@ namespace SceneOperations
 
     int removeMesh(int index)
     {
-        if(scene_meshes.size() == 0){
+        if(scene_objects.size() == 0){
             std::cout << "there is no mesh\n";
             return -1;
         }
 
-        if(scene_meshes.size() < index){
+        if(scene_objects.size() < index){
             std::cout << "out of range\n";
             return -1;
         }
 
-        scene_meshes.erase(scene_meshes.begin()+index);
+        auto obj = scene_objects[index];
+
+        scene_meshes.erase(scene_meshes.begin()+obj->meshIndex);
+        scene_objects.erase(scene_objects.begin()+index);
+        delete obj;
 
         return 1;
     }
@@ -152,12 +156,13 @@ namespace SceneOperations
     void openFile(std::string path)
     {
         std::cout << path << "\n";
-        MeshLoader::import(path);
+        std::vector<MeshPtr_Index> meshVec = MeshLoader::import(path);
 
-        for(Mesh* m : scene_meshes)
+        for(auto m : meshVec)
         {
             auto* newObj = new Object3D();
-            newObj->mesh = m;
+            newObj->mesh = m.meshP;
+            newObj->meshIndex = m.index;
 
             scene_objects.push_back(newObj);
         }

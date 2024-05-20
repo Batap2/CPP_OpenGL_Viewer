@@ -4,6 +4,12 @@
 #include "transform.h"
 #include "globals.h"
 #include "stb_image.h"
+#include "Mesh.h"
+
+Mesh::~Mesh() {
+    std::cout << "dead\n";
+    destroy_buffers();
+}
 
 void Mesh::destroy_buffers(){
 	glDeleteVertexArrays(1, &VAO);
@@ -295,6 +301,7 @@ void Mesh::applyTransform(glm::mat4 transform)
         normalsT[i] = glm::normalize(vec3(glm::inverse(glm::transpose(transform)) * glm::vec4(normals[i],1)));
     }
 
+
     // Bind VAO
     glBindVertexArray(VAO);
 
@@ -305,6 +312,14 @@ void Mesh::applyTransform(glm::mat4 transform)
     // Bind normals to layout location 1
     glBindBuffer(GL_ARRAY_BUFFER, NBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * normalsT.size(), normalsT.data());
+
+
+    // Bind VAO
+    glBindVertexArray(VAO_wireframe);
+
+    // Bind VBO and copy vertex data
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_wireframe);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * verticesT.size(), verticesT.data());
 }
 
 void Mesh::createWireframeIndicies()
@@ -363,9 +378,8 @@ void Mesh::createWireframeIndicies()
     }
 
 
-    for (const auto &edge: edgeFaceAdjacency)
-    {
-        if(edge.second[1] == -1){
+    for (const auto &edge: edgeFaceAdjacency) {
+        if (edge.second[1] == -1) {
             edges.push_back(edge.first);
             continue;
         }
@@ -374,12 +388,12 @@ void Mesh::createWireframeIndicies()
         unsigned int tri2 = edge.second[1];
 
         glm::vec3 p0 = vertices[indices[tri1]];
-        glm::vec3 p1 = vertices[indices[tri1+1]];
-        glm::vec3 p2 = vertices[indices[tri1+2]];
+        glm::vec3 p1 = vertices[indices[tri1 + 1]];
+        glm::vec3 p2 = vertices[indices[tri1 + 2]];
 
         glm::vec3 p02 = vertices[indices[tri2]];
-        glm::vec3 p12 = vertices[indices[tri2+1]];
-        glm::vec3 p22 = vertices[indices[tri2+2]];
+        glm::vec3 p12 = vertices[indices[tri2 + 1]];
+        glm::vec3 p22 = vertices[indices[tri2 + 2]];
 
         glm::vec3 u1 = p1 - p0;
         glm::vec3 v1 = p2 - p0;
@@ -387,17 +401,20 @@ void Mesh::createWireframeIndicies()
         glm::vec3 v2 = p22 - p02;
 
 
-        glm::vec3 n1 = glm::cross(u1,v1);
-        glm::vec3 n2 = glm::cross(u2,v2);
+        glm::vec3 n1 = glm::cross(u1, v1);
+        glm::vec3 n2 = glm::cross(u2, v2);
 
-        float angle = atan2(glm::length(glm::cross(n1,n2)), glm::dot(n1,n2));
+        float angle = atan2(glm::length(glm::cross(n1, n2)), glm::dot(n1, n2));
 
-        if(angle > 0.77){
+        std::cout << angle << '\n';
+
+        if(angle > 0.01)
             edges.push_back(edge.first);
+
+        if (angle > 0.77) {
             displayedEdges_boolArray[tri1 + edge.second[2]] = true;
             displayedEdges_boolArray[tri2 + edge.second[3]] = true;
         }
-
     }
 
     boolsToUintArray(displayedEdges_boolArray, displayedEdges_fragmentWireframe);
